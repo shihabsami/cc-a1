@@ -1,0 +1,23 @@
+{
+  "requireConfig": false,
+  "eslintIntegration": false,
+  "tslintIntegration": true,
+  "stylelintIntegration": false,
+  "semi": true,
+  "singleQuote": true,
+  "jsxSingleQuote": true,
+  "tsxSingleQuote": true,
+  "bracketSpacing": true,
+  "useTabs": false,
+  "requirePragma": false,
+  "insertPragma": false,
+  "printWidth": 120,
+  "tabWidth": 2,
+  "arrowParens": "always",
+  "trailingComma": "all",
+  "endOfLine": "auto",
+  "proseWrap": "preserve",
+  "quoteProps": "as-needed",
+  "embeddedLanguageFormatting": "auto",
+  "htmlWhitespaceSensitivity": "css"
+}
