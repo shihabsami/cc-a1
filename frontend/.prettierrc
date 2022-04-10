@@ -14,7 +14,7 @@
   "printWidth": 120,
   "tabWidth": 2,
   "arrowParens": "always",
-  "trailingComma": "all",
+  "trailingComma": "none",
   "endOfLine": "auto",
   "proseWrap": "preserve",
   "quoteProps": "as-needed",

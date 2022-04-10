@@ -93,7 +93,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
                         "/**/*.js").permitAll()
                 // TODO API endpoints are subject to change.
                 .antMatchers("/api/users/register").permitAll()
-                .antMatchers("/api/users/login").permitAll()
+                .antMatchers("/api/users/authenticate").permitAll()
                 .antMatchers("/api/users/**").authenticated()
                 .anyRequest().authenticated();
 

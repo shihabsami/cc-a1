@@ -28,7 +28,7 @@ public class UserValidator implements Validator {
         // Below are a few simple validations. Could always add/remove as necessary.
         if (user.getPassword().length() < MINIMUM_PASSWORD_LENGTH)
             errors.rejectValue("password", "Length",
-                    String.format("Password must be at least %d characters.", MINIMUM_PASSWORD_LENGTH));
+                               String.format("Password must be at least %d characters.", MINIMUM_PASSWORD_LENGTH));
 
         if (user.getRole().equals(User.UserRole.ADMIN.string))
             errors.rejectValue("role", "Value", "Not a valid role.");

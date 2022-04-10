@@ -22,8 +22,8 @@ public class CustomUserDetails implements UserDetails {
         username = user.getUsername();
         password = user.getPassword();
         authorities = Arrays.stream(new String[]{user.getRole()})
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+                            .map(SimpleGrantedAuthority::new)
+                            .collect(Collectors.toList());
     }
 
     @Override
