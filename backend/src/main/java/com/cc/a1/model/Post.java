@@ -26,6 +26,8 @@ public class Post {
     @NotNull(message = "User cannot be null.")
     private User user;
 
+    private String text;
+
     @OneToOne(mappedBy = "post", cascade = CascadeType.ALL)
     private Image image;
 
