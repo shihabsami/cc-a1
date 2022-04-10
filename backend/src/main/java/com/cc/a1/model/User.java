@@ -1,7 +1,9 @@
 package com.cc.a1.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -9,6 +11,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.util.Date;
+import java.util.List;
 
 /**
  * User JPA entity to represent the user data model.
@@ -16,15 +19,13 @@ import java.util.Date;
 @Entity
 @Getter
 @Setter
-// Table name enclosed with quotes as some database flavours have "user" as a reserved keyword.
-@Table(name = "\"user\"")
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "users")
 public class User {
 
     @Id
-    // Automatically generate ids.
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    // Do not serialise if value is null.
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long id;
 
     @Column(unique = true)
@@ -40,6 +41,15 @@ public class User {
     @NotBlank(message = "User needs to have a role defined.")
     @Pattern(regexp = "^ROLE_USER|ROLE_ADMIN$", message = "Not a valid role.")
     private String role;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Post> posts;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Like> likes;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Comment> comments;
 
     // The following fields are for debugging purposes only.
     private Date createdAt;

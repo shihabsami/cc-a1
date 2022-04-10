@@ -6,7 +6,7 @@ import com.cc.a1.payload.AuthenticationRequest;
 import com.cc.a1.payload.AuthenticationResponse;
 import com.cc.a1.security.JWTTokenProvider;
 import com.cc.a1.service.CustomUserDetailsService;
-import com.cc.a1.service.UserService;
+import com.cc.a1.service.UsersService;
 import com.cc.a1.service.ValidationErrorService;
 import com.cc.a1.validator.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +23,9 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/users")
-public class UserController {
+public class UsersController {
 
-    private final UserService userService;
+    private final UsersService usersService;
     private final CustomUserDetailsService userDetailsService;
     private final UserValidator userValidator;
     private final ValidationErrorService validationErrorService;
@@ -33,13 +33,13 @@ public class UserController {
     private final JWTTokenProvider jwtTokenProvider;
 
     @Autowired
-    public UserController(UserService userService,
-                          CustomUserDetailsService userDetailsService,
-                          UserValidator userValidator,
-                          ValidationErrorService validationErrorService,
-                          AuthenticationManager authenticationManager,
-                          JWTTokenProvider jwtTokenProvider) {
-        this.userService = userService;
+    public UsersController(UsersService usersService,
+                           CustomUserDetailsService userDetailsService,
+                           UserValidator userValidator,
+                           ValidationErrorService validationErrorService,
+                           AuthenticationManager authenticationManager,
+                           JWTTokenProvider jwtTokenProvider) {
+        this.usersService = usersService;
         this.userDetailsService = userDetailsService;
         this.userValidator = userValidator;
         this.validationErrorService = validationErrorService;
@@ -60,7 +60,7 @@ public class UserController {
         if (errorMap != null)
             return errorMap;
 
-        user = userService.saveUser(user);
+        user = usersService.saveUser(user);
         String jwt = jwtTokenProvider.createToken(userDetailsService.loadUserByUsername(user.getUsername()));
         return new ResponseEntity<>(new AuthenticationResponse(user, jwt), HttpStatus.CREATED);
     }
@@ -83,7 +83,7 @@ public class UserController {
         String jwt = jwtTokenProvider.createToken(
                 userDetailsService.loadUserByUsername(authenticationRequest.getUsername()));
         return new ResponseEntity<>(new AuthenticationResponse(
-                userService.getUserByUsername(authenticationRequest.getUsername()), jwt), HttpStatus.OK);
+                usersService.getUserByUsername(authenticationRequest.getUsername()), jwt), HttpStatus.OK);
     }
 
     /**
@@ -92,7 +92,7 @@ public class UserController {
     @GetMapping("/profile")
     public ResponseEntity<?> viewProfile() throws UserNotFoundException {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return new ResponseEntity<>(userService.getUserByUsername(userDetails.getUsername()), HttpStatus.OK);
+        return new ResponseEntity<>(usersService.getUserByUsername(userDetails.getUsername()), HttpStatus.OK);
     }
 
 }

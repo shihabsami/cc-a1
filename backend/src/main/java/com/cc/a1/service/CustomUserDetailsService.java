@@ -2,7 +2,7 @@ package com.cc.a1.service;
 
 import com.cc.a1.model.CustomUserDetails;
 import com.cc.a1.model.User;
-import com.cc.a1.repository.UserRepository;
+import com.cc.a1.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,11 +17,11 @@ import java.util.Optional;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final UsersRepository usersRepository;
 
     @Autowired
-    public CustomUserDetailsService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public CustomUserDetailsService(UsersRepository usersRepository) {
+        this.usersRepository = usersRepository;
     }
 
     /**
@@ -29,7 +29,7 @@ public class CustomUserDetailsService implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findByUsername(username);
+        Optional<User> user = usersRepository.findByUsername(username);
         user.orElseThrow(
                 () -> new UsernameNotFoundException(String.format("User by username %s not found.", username)));
         return user.map(CustomUserDetails::new).get();

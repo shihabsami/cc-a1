@@ -3,7 +3,7 @@ package com.cc.a1.service;
 import com.cc.a1.exception.UserNotFoundException;
 import com.cc.a1.exception.UsernameAlreadyExistsException;
 import com.cc.a1.model.User;
-import com.cc.a1.repository.UserRepository;
+import com.cc.a1.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,14 +12,14 @@ import org.springframework.stereotype.Service;
  * Service layer for the {@link User} JPA entity.
  */
 @Service
-public class UserService {
+public class UsersService {
 
-    private final UserRepository userRepository;
+    private final UsersRepository usersRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
+    public UsersService(UsersRepository usersRepository, BCryptPasswordEncoder passwordEncoder) {
+        this.usersRepository = usersRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -27,34 +27,28 @@ public class UserService {
      * Saves a new user into the database.
      */
     public User saveUser(User user) {
-        if (userRepository.existsByUsername(user.getUsername()))
+        if (usersRepository.existsByUsername(user.getUsername()))
             throw new UsernameAlreadyExistsException(
                     String.format("User by username %s already exists.", user.getUsername()));
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+        return usersRepository.save(user);
     }
 
     /**
      * Get a user by their id.
      */
     public User getUserById(long id) {
-        User user = userRepository.findById(id).orElseThrow(
+        return usersRepository.findById(id).orElseThrow(
                 () -> new UserNotFoundException(String.format("User by id %d not found.", id)));
-
-        user.setPassword(null);
-        return user;
     }
 
     /**
      * Get a user by their username.
      */
     public User getUserByUsername(String username) {
-        User user = userRepository.findByUsername(username).orElseThrow(
+        return usersRepository.findByUsername(username).orElseThrow(
                 () -> new UserNotFoundException(String.format("User by username %s not found\n", username)));
-
-        user.setPassword(null);
-        return user;
     }
 
 }

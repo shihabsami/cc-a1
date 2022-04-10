@@ -10,7 +10,7 @@ import java.util.Optional;
  * JPA repository for the {@link User} entity.
  */
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UsersRepository extends JpaRepository<User, Long> {
 
     /**
      * Find a user by username.
