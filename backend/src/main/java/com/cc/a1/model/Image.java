@@ -1,20 +1,20 @@
 package com.cc.a1.model;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "images")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Image {
 
     @Id
@@ -22,6 +22,7 @@ public class Image {
     private Long id;
 
     @NotBlank(message = "Image URL cannot be blank.")
+    @Size(max = 1023)
     private String url;
 
     @OneToOne(cascade = CascadeType.ALL)

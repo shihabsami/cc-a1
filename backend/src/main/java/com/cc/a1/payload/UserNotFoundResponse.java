@@ -11,10 +11,10 @@ import lombok.Setter;
 @Setter
 public class UserNotFoundResponse {
 
-    private String id;
+    private String user;
 
-    public UserNotFoundResponse(String field) {
-        this.id = field;
+    public UserNotFoundResponse(String user) {
+        this.user = user;
     }
 
 }

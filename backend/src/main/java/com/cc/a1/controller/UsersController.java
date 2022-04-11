@@ -4,7 +4,7 @@ import com.cc.a1.exception.UserNotFoundException;
 import com.cc.a1.model.User;
 import com.cc.a1.payload.AuthenticationRequest;
 import com.cc.a1.payload.AuthenticationResponse;
-import com.cc.a1.security.JWTTokenProvider;
+import com.cc.a1.security.JwtUtility;
 import com.cc.a1.service.CustomUserDetailsService;
 import com.cc.a1.service.UsersService;
 import com.cc.a1.service.ValidationErrorService;
@@ -30,7 +30,7 @@ public class UsersController {
     private final UserValidator userValidator;
     private final ValidationErrorService validationErrorService;
     private final AuthenticationManager authenticationManager;
-    private final JWTTokenProvider jwtTokenProvider;
+    private final JwtUtility jwtUtility;
 
     @Autowired
     public UsersController(UsersService usersService,
@@ -38,13 +38,13 @@ public class UsersController {
                            UserValidator userValidator,
                            ValidationErrorService validationErrorService,
                            AuthenticationManager authenticationManager,
-                           JWTTokenProvider jwtTokenProvider) {
+                           JwtUtility jwtUtility) {
         this.usersService = usersService;
         this.userDetailsService = userDetailsService;
         this.userValidator = userValidator;
         this.validationErrorService = validationErrorService;
         this.authenticationManager = authenticationManager;
-        this.jwtTokenProvider = jwtTokenProvider;
+        this.jwtUtility = jwtUtility;
     }
 
     /**
@@ -61,7 +61,7 @@ public class UsersController {
             return errorMap;
 
         user = usersService.saveUser(user);
-        String jwt = jwtTokenProvider.createToken(userDetailsService.loadUserByUsername(user.getUsername()));
+        String jwt = jwtUtility.createToken(userDetailsService.loadUserByUsername(user.getUsername()));
         return new ResponseEntity<>(new AuthenticationResponse(user, jwt), HttpStatus.CREATED);
     }
 
@@ -80,7 +80,7 @@ public class UsersController {
                 authenticationRequest.getPassword()
         ));
 
-        String jwt = jwtTokenProvider.createToken(
+        String jwt = jwtUtility.createToken(
                 userDetailsService.loadUserByUsername(authenticationRequest.getUsername()));
         return new ResponseEntity<>(new AuthenticationResponse(
                 usersService.getUserByUsername(authenticationRequest.getUsername()), jwt), HttpStatus.OK);

@@ -15,7 +15,7 @@ import java.io.IOException;
  * Implementation of the {@link AuthenticationEntryPoint} to handle the response for unauthorised requests.
  */
 @Component
-public class JWTAuthenticationEntryPoint implements AuthenticationEntryPoint {
+public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     /*
      * This method is invoked on receiving an unauthorised request.

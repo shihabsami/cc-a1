@@ -27,13 +27,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     private CustomUserDetailsService userDetailsService;
-    private JWTAuthenticationEntryPoint authenticationEntryPoint;
-    private BCryptPasswordEncoder passwordEncoder;
-
-    @Autowired
-    public void setAuthenticationEntryPoint(JWTAuthenticationEntryPoint authenticationEntryPoint) {
-        this.authenticationEntryPoint = authenticationEntryPoint;
-    }
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
     public void setUserDetailsService(CustomUserDetailsService userDetailsService) {
@@ -41,8 +37,18 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     }
 
     @Autowired
-    public void setPasswordEncoder(BCryptPasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
+    public void setJwtAuthenticationEntryPoint(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
+        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
+    }
+
+    @Autowired
+    public void setJwtAuthenticationFilter(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
+
+    @Autowired
+    public void setBCryptPasswordEncoder(BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     /*
@@ -55,20 +61,12 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     }
 
     /**
-     * This Bean defines how to instantiate the custom JWT authentication filter.
-     */
-    @Bean
-    public JWTAuthenticationFilter jwtAuthenticationFilter() {
-        return new JWTAuthenticationFilter();
-    }
-
-    /**
      * Configures the authentication manager to use the custom implementation of the {@link UserDetailsService}.
      * And the previously Autowired BCrypt password encoder as the default password encoder.
      */
     @Override
     protected void configure(AuthenticationManagerBuilder builder) throws Exception {
-        builder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+        builder.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
     }
 
     /**
@@ -77,7 +75,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity security) throws Exception {
         security.httpBasic().and().cors().and().csrf().disable().exceptionHandling()
-                .authenticationEntryPoint(authenticationEntryPoint)
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().headers().frameOptions().sameOrigin()
                 .and().authorizeRequests()
@@ -95,10 +93,11 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/users/register").permitAll()
                 .antMatchers("/api/users/authenticate").permitAll()
                 .antMatchers("/api/users/**").authenticated()
-                .anyRequest().authenticated();
+                // TODO Turn this off in production.
+                .anyRequest().permitAll();
 
         // Configure the JWT authentication filter to run before processing every HTTP request.
-        security.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        security.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
 }

@@ -21,7 +21,7 @@ import static com.cc.a1.security.SecurityConstants.JWT_SECRET_KEY;
  * Utility class to handle JWT token related operations.
  */
 @Component
-public class JWTTokenProvider {
+public class JwtUtility {
 
     /**
      * Extract username (subject) from the token payload.

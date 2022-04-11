@@ -22,17 +22,17 @@ import static com.cc.a1.security.SecurityConstants.JWT_SCHEME;
  * Custom authentication filter for validating JWT tokens. To be run once before each request.
  */
 @Component
-public class JWTAuthenticationFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private JWTTokenProvider tokenProvider;
+    private JwtUtility jwtUtility;
     private CustomUserDetailsService userDetailsService;
 
-    public JWTAuthenticationFilter() {
+    public JwtAuthenticationFilter() {
     }
 
     @Autowired
-    public void setTokenProvider(JWTTokenProvider tokenProvider) {
-        this.tokenProvider = tokenProvider;
+    public void setJwtUtility(JwtUtility jwtUtility) {
+        this.jwtUtility = jwtUtility;
     }
 
     @Autowired
@@ -52,14 +52,14 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         // Validate token structure.
         if (authorizationHeader != null && authorizationHeader.startsWith(JWT_SCHEME)) {
             jwt = authorizationHeader.substring(JWT_SCHEME.length() + 1);
-            username = tokenProvider.extractUsername(jwt);
+            username = jwtUtility.extractUsername(jwt);
         }
 
         // Validate token claims.
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            if (tokenProvider.validateToken(jwt, userDetails)) {
+            if (jwtUtility.validateToken(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
