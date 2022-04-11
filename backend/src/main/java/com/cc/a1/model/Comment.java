@@ -19,12 +19,12 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "users_id")
     @NotNull(message = "User cannot be null.")
     private User user;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "posts_id")
     @NotNull(message = "Post cannot be null.")
     private Post post;

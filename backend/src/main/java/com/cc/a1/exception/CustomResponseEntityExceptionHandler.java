@@ -1,9 +1,6 @@
 package com.cc.a1.exception;
 
-import com.cc.a1.payload.InvalidImageResponse;
-import com.cc.a1.payload.PostNotFoundResponse;
-import com.cc.a1.payload.UserNotFoundResponse;
-import com.cc.a1.payload.UsernameAlreadyExistsResponse;
+import com.cc.a1.payload.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -37,6 +34,12 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
     @ExceptionHandler
     public final ResponseEntity<?> handleInvalidImage(InvalidImageException exception) {
         InvalidImageResponse exceptionResponse = new InvalidImageResponse(exception.getMessage());
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public final ResponseEntity<?> handleLikeAlreadyExists(LikeAlreadyExistsException exception) {
+        LikeAlreadyExistsResponse exceptionResponse = new LikeAlreadyExistsResponse(exception.getMessage());
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
 

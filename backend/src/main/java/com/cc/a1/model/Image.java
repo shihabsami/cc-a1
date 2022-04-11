@@ -25,7 +25,7 @@ public class Image {
     @Size(max = 1023)
     private String url;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "posts_id")
     @NotNull(message = "Post cannot be null.")
     private Post post;
