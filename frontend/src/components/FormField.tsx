@@ -12,8 +12,6 @@ function FormField({ onChange, name, errors, ...rest }: FormFieldProps) {
       error={!!errors?.[name]}
       helperText={errors?.[name]}
       variant='outlined'
-      margin='normal'
-      required
       fullWidth
       onChange={(event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) =>
         onChange && onChange(event.target.value)

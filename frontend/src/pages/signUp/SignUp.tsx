@@ -40,12 +40,12 @@ export default function SignUp() {
   useEffect(() => {
     if (isSuccess && data) {
       context.signIn(data.data);
-      return navigate('/feed');
+      return navigate('/uploadProfileImage');
     }
   }, [context, data, isSuccess, navigate]);
 
   return (
-    <Container component='main' maxWidth='xs'>
+    <Container component='div' maxWidth='xs'>
       <Box
         sx={{
           marginTop: 8,
@@ -73,7 +73,6 @@ export default function SignUp() {
                 errors={error?.response?.data}
                 margin='normal'
                 required
-                fullWidth
               />
             </Grid>
             <Grid item xs={12}>
@@ -86,7 +85,6 @@ export default function SignUp() {
                 errors={error?.response?.data}
                 margin='normal'
                 required
-                fullWidth
               />
             </Grid>
             <Grid item xs={12}>

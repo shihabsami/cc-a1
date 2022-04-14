@@ -41,7 +41,7 @@ export default function SignIn() {
   }, [context, data, isSuccess, navigate]);
 
   return (
-    <Container component='main' maxWidth='xs'>
+    <Container component='div' maxWidth='xs'>
       <Box
         sx={{
           marginTop: 8,
@@ -69,7 +69,6 @@ export default function SignIn() {
                 errors={error?.response?.data}
                 margin='normal'
                 required
-                fullWidth
               />
             </Grid>
             <Grid item xs={12}>
@@ -82,7 +81,6 @@ export default function SignIn() {
                 errors={error?.response?.data}
                 margin='normal'
                 required
-                fullWidth
               />
             </Grid>
           </Grid>

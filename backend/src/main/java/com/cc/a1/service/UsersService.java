@@ -39,16 +39,24 @@ public class UsersService {
      * Get a user by their id.
      */
     public User getUserById(long id) {
-        return usersRepository.findById(id).orElseThrow(
+        User user = usersRepository.findById(id).orElseThrow(
                 () -> new UserNotFoundException(String.format("User by id %d not found.", id)));
+
+        // Prevent serialisation of sensitive fields.
+        user.setPassword(null);
+        return user;
     }
 
     /**
      * Get a user by their username.
      */
     public User getUserByUsername(String username) {
-        return usersRepository.findByUsername(username).orElseThrow(
+        User user = usersRepository.findByUsername(username).orElseThrow(
                 () -> new UserNotFoundException(String.format("User by username %s not found\n", username)));
+
+        // Prevent serialisation of sensitive fields.
+        user.setPassword(null);
+        return user;
     }
 
 }

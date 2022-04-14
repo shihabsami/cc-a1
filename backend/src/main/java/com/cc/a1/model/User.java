@@ -42,6 +42,9 @@ public class User {
     @Pattern(regexp = "^ROLE_USER|ROLE_ADMIN$", message = "Not a valid role.")
     private String role;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Image image;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Post> posts;

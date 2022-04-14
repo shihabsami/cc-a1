@@ -53,7 +53,6 @@ public class S3Service {
         } catch (AmazonServiceException | IOException | InterruptedException exception) {
             throw new InvalidImageException("Could not upload image.");
         }
-        transferManager.shutdownNow();
 
         return s3Client.getUrl(bucketName, newFileName).toExternalForm();
     }

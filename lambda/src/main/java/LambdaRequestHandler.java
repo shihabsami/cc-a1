@@ -26,7 +26,7 @@ public class LambdaRequestHandler implements RequestHandler<S3Event, String> {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private static final int THUMBNAIL_WIDTH = 64;
     private static final int THUMBNAIL_HEIGHT = 64;
-    private static final String DESTINATION_BUCKET = "cc-a1-thumbnail-bucket";
+    private static final String DESTINATION_BUCKET = "cc-a1-thumbnails-bucket";
 
     @Override
     public String handleRequest(S3Event s3Event, Context context) {
@@ -57,7 +57,8 @@ public class LambdaRequestHandler implements RequestHandler<S3Event, String> {
             throw new RuntimeException();
         }
 
-        logger.log(String.format("INFO Producing image thumbnail of dimensions %dx%d", THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT));
+        logger.log(
+                String.format("INFO Producing image thumbnail of dimensions %dx%d", THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT));
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
             Thumbnails.of(image)
@@ -79,7 +80,7 @@ public class LambdaRequestHandler implements RequestHandler<S3Event, String> {
         metadata.setContentType("image/jpeg");
 
         String destinationObjectKey = Files.getNameWithoutExtension(sourceObjectKey) +
-                                      "_" + THUMBNAIL_WIDTH + "x" + THUMBNAIL_HEIGHT + ".jpeg" ;
+                                      "_" + THUMBNAIL_WIDTH + "x" + THUMBNAIL_HEIGHT + ".jpeg";
         logger.log(String.format("INFO Uploading image as %s/%s", DESTINATION_BUCKET, destinationObjectKey));
         try {
             s3Client.putObject(DESTINATION_BUCKET, destinationObjectKey, inputStream, metadata);

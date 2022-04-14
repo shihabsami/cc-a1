@@ -21,9 +21,6 @@ public class AuthenticationResponse {
     public AuthenticationResponse(User user, String jwt) {
         this.user = user;
         this.jwt = jwt;
-
-        // Prevent serialisation of unnecessary fields.
-        user.setPassword(null);
     }
 
 }

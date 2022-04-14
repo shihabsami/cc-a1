@@ -7,7 +7,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
@@ -27,7 +26,10 @@ public class Image {
 
     @OneToOne
     @JoinColumn(name = "posts_id")
-    @NotNull(message = "Post cannot be null.")
     private Post post;
+
+    @OneToOne
+    @JoinColumn(name = "users_id")
+    private User user;
 
 }
