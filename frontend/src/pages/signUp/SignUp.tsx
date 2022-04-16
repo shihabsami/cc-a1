@@ -18,6 +18,8 @@ import { GlobalContext } from '../../components/GlobalContext';
 
 export default function SignUp() {
   const [username, setUsername] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const passwordsMatchingError = password && password !== confirmPassword && 'Passwords must match.';
@@ -27,6 +29,8 @@ export default function SignUp() {
   const { data, error, isSuccess, mutate } = useMutation<AxiosResponse<SignInResponse>, AxiosError>(() => {
     return api.post('/users/register', {
       username,
+      firstName,
+      lastName,
       password,
       role: Role.ROLE_USER
     });
@@ -61,7 +65,33 @@ export default function SignUp() {
           Register
         </Typography>
         <Box component='form' noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
-          <Grid container spacing={2}>
+          <Grid container spacing={1}>
+            <Grid item xs={6}>
+              <FormField
+                name='firstName'
+                label='First Name'
+                type='text'
+                autoComplete='firstName'
+                autoFocus
+                onChange={setFirstName}
+                errors={error?.response?.data}
+                margin='normal'
+                required
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <FormField
+                name='lastName'
+                label='Last Name'
+                type='text'
+                autoComplete='lastName'
+                autoFocus
+                onChange={setLastName}
+                errors={error?.response?.data}
+                margin='normal'
+                required
+              />
+            </Grid>
             <Grid item xs={12}>
               <FormField
                 name='username'

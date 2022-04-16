@@ -52,8 +52,18 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAll() {
-        return new ResponseEntity<>(postsService.getAllPosts(), HttpStatus.OK);
+    public ResponseEntity<?> getPosts(@RequestParam int page) {
+        return new ResponseEntity<>(postsService.getPosts(page), HttpStatus.OK);
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<?> getCount() {
+        return new ResponseEntity<>(postsService.getPostCount(), HttpStatus.OK);
+    }
+
+    @GetMapping("/hasMore")
+    public ResponseEntity<?> hasMoreAfter(@RequestParam int page) {
+        return new ResponseEntity<>(postsService.hasMoreAfter(page), HttpStatus.OK);
     }
 
 }

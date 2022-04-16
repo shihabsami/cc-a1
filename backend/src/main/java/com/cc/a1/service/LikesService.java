@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 public class LikesService {
@@ -47,6 +48,10 @@ public class LikesService {
                     String.format("Like on post by id %d by user with username %s does not exist.", postId, username));
 
         likesRepository.deleteByPostAndUser(post, user);
+    }
+
+    public List<Like> getByPostId(long postId) {
+        return likesRepository.findByPost_Id(postId);
     }
 
 }

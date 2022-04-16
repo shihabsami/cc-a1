@@ -1,19 +1,18 @@
 package com.cc.a1.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "posts")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Post {
 
     @Id
@@ -31,9 +30,21 @@ public class Post {
     private Image image;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Like> likes;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Comment> comments;
+
+    private Date createdAt;
+
+    /**
+     * Saves the timestamp of creation.
+     */
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
+    }
 
 }

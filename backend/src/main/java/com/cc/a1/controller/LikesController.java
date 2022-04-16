@@ -36,4 +36,9 @@ public class LikesController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping
+    public ResponseEntity<?> getByPostId(@RequestParam long postId) {
+        return new ResponseEntity<>(likesService.getByPostId(postId), HttpStatus.OK);
+    }
+
 }

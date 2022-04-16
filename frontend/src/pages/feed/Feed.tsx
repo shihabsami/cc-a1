@@ -1,12 +1,7 @@
 import {
-  Avatar,
   Box,
   Button,
-  Card,
-  CardActions,
-  CardContent,
-  CardHeader,
-  CardMedia,
+  CircularProgress,
   Container,
   Dialog,
   DialogContent,
@@ -18,78 +13,129 @@ import {
   Typography
 } from '@mui/material';
 import * as React from 'react';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
-import { red } from '@mui/material/colors';
 import CloseIcon from '@mui/icons-material/Close';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import ShareIcon from '@mui/icons-material/Share';
-import InsertCommentIcon from '@mui/icons-material/InsertComment';
 import { useMutation } from 'react-query';
 import { api } from '../../util/api';
-import { useNavigate } from 'react-router-dom';
 import RateReviewIcon from '@mui/icons-material/RateReview';
-import { GlobalContext } from '../../components/GlobalContext';
 import LoadingButton from '../../components/LoadingButton';
+import { Post } from '../../util/types';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import Link from '@mui/material/Link';
+import FeedPost from '../../components/FeedPost';
+
+type FeedState = {
+  posts: Post[];
+  page: number;
+  hasMore: boolean;
+};
+
+type PostState = {
+  text?: string;
+  image?: File;
+  formOpen: boolean;
+};
 
 export default function Feed() {
-  const { user } = useContext(GlobalContext);
-  const navigate = useNavigate();
-  const values = ['alpha', 'beta'];
-  const [postFormOpen, setPostFormOpen] = React.useState(false);
-  const [text, setText] = useState<string | undefined>();
-  const [image, setImage] = useState<File | undefined>();
+  const [feedState, setFeedState] = useState<FeedState>({ posts: [], page: -1, hasMore: false });
+  const [postState, setPostState] = useState<PostState>({ formOpen: false });
   const acceptedImageTypes = ['image/jpeg', 'image/png'];
 
   const onImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.item(0);
     if (file && acceptedImageTypes.includes(file.type)) {
-      setImage(file);
+      setPostState({
+        text: postState.text,
+        image: file,
+        formOpen: postState.formOpen
+      });
     } else {
-      setImage(undefined);
+      setPostState({
+        text: postState.text,
+        image: undefined,
+        formOpen: postState.formOpen
+      });
     }
   };
 
   const handlePostFormOpen = () => {
-    setPostFormOpen(true);
+    setPostState({
+      text: postState.text,
+      image: postState.image,
+      formOpen: true
+    });
   };
   const handlePostFormClose = () => {
-    setPostFormOpen(false);
+    setPostState({
+      text: postState.text,
+      image: postState.image,
+      formOpen: false
+    });
   };
 
-  const { data, error, isLoading, isSuccess, mutate } = useMutation(() => {
+  const {
+    isLoading: isPostLoading,
+    isSuccess: isPostSuccess,
+    mutate: mutatePost
+  } = useMutation(() => {
     const formData = new FormData();
-    formData.append('text', text || '');
-    if (image) {
-      formData.append('image', image);
+    formData.append('text', postState.text || '');
+    if (postState.image) {
+      formData.append('image', postState.image);
       return api.post('/posts/saveWithImage', formData, { headers: { 'Content-Type': `multipart/form-data` } });
     } else {
       return api.post('/posts/save', formData);
     }
   });
 
+  const fetchMorePosts = async () => {
+    const nextPage = feedState.page + 1;
+    await api
+      .get('/posts', {
+        params: {
+          page: nextPage
+        }
+      })
+      .then(async (response) => {
+        const updatedPosts = {
+          posts: feedState.posts.concat(response.data as Post[]),
+          page: nextPage,
+          hasMore: await api
+            .get('/posts/hasMore', {
+              params: {
+                page: nextPage
+              }
+            })
+            .then((response) => response.data as boolean)
+        };
+        setFeedState(updatedPosts);
+      });
+  };
+
+  const { isLoading: isFeedLoading, mutate: mutateFeed } = useMutation(fetchMorePosts);
+
+  useEffect(() => {
+    mutateFeed();
+  }, [mutateFeed]);
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log(text);
-    console.log(image);
-    console.log(user);
-
-    mutate();
+    mutatePost();
   };
 
   useEffect(() => {
-    if (isSuccess) {
-      setPostFormOpen(false);
-      setText(undefined);
-      setImage(undefined);
-    } else {
-      console.log(error);
+    if (isPostSuccess) {
+      setPostState({
+        text: undefined,
+        image: undefined,
+        formOpen: false
+      });
     }
-  }, [data, error, isSuccess, navigate]);
+  }, [isPostSuccess]);
 
   return (
-    <>
+    <Container>
       <Container maxWidth='sm'>
         <Box sx={{ display: 'flex', mt: 3 }}>
           <Box sx={{ flexGrow: 1 }}>
@@ -112,63 +158,63 @@ export default function Feed() {
         </Box>
         <Divider sx={{ pt: 3 }} />
 
-        {values.map((value) => (
-          <Card key={value} sx={{ boxShadow: 3, maxWidth: 'sm', my: '2rem' }}>
-            <CardHeader
-              avatar={
-                <Avatar sx={{ bgcolor: red[500] }} aria-label='recipe'>
-                  R
-                </Avatar>
-              }
-              action={
-                <IconButton aria-label='settings'>
-                  <MoreVertIcon />
-                </IconButton>
-              }
-              title={value}
-              subheader='September 14, 2016'
-            />
-            <CardContent>
-              <Typography variant='body2' color='text.secondary'>
-                This impressive paella is a perfect party dish and a fun meal to cook together with your guests. Add 1
-                cup of frozen peas along with the mussels, if you like.
-              </Typography>
-            </CardContent>
-            <CardMedia
-              component='img'
-              sx={{
-                backgroundColor: '#ff0000'
-              }}
-              image={`https://picsum.photos/${value.length * 250}/${value.length * 250}?random=${value}`}
-              alt='Paella dish'
-              onClick={handlePostFormOpen}
-            />
-            <CardActions disableSpacing>
-              <IconButton aria-label='add to favorites'>
-                <ThumbUpIcon />
-              </IconButton>
-              <IconButton aria-label='add to favorites'>
-                <InsertCommentIcon />
-              </IconButton>
-              <IconButton aria-label='share'>
-                <ShareIcon />
-              </IconButton>
-            </CardActions>
-          </Card>
-        ))}
+        {isFeedLoading ? (
+          <Box sx={{ p: 4 }} display={'flex'} justifyContent={'center'}>
+            <CircularProgress size={24} color='primary' />
+          </Box>
+        ) : (
+          <InfiniteScroll
+            next={fetchMorePosts}
+            hasMore={feedState.hasMore}
+            endMessage={
+              <Box
+                sx={{ pb: 4 }}
+                display={'flex'}
+                flexDirection={'column'}
+                alignItems={'center'}
+                justifyContent={'center'}
+              >
+                <Typography variant={'body1'}>That&apos;s all for now. </Typography>
+                <Link
+                  sx={{ p: 0, m: 0 }}
+                  component={'button'}
+                  variant={'body1'}
+                  onClick={() => {
+                    window.scrollTo({
+                      top: 0,
+                      behavior: 'smooth' // for smoothly scrolling
+                    });
+                  }}
+                >
+                  Back to top.
+                </Link>
+              </Box>
+            }
+            loader={
+              <Box sx={{ pb: 4 }} display={'flex'} justifyContent={'center'}>
+                <CircularProgress size={24} color='primary' />
+              </Box>
+            }
+            dataLength={feedState.posts.length}
+          >
+            {feedState.posts.map((p) => (
+              <FeedPost post={p} key={p.id} />
+            ))}
+          </InfiniteScroll>
+        )}
       </Container>
 
       <Dialog
         sx={{ backgroundColor: 'transparent', boxShadow: 'none' }}
         onClose={handlePostFormClose}
-        open={postFormOpen}
+        open={postState.formOpen}
       >
         <DialogTitle>
           <Typography variant={'body1'}>Create New Post</Typography>
           <IconButton
             aria-label='close'
             onClick={handlePostFormClose}
-            disabled={isLoading}
+            disabled={isPostLoading}
             sx={{
               position: 'absolute',
               right: 8,
@@ -181,10 +227,16 @@ export default function Feed() {
         <DialogContent dividers>
           <Box width={'400px'} component='form' noValidate sx={{ mt: 1 }} onSubmit={handleSubmit}>
             <TextField
-              rows={image ? undefined : 8}
+              rows={postState.image ? undefined : 8}
               fullWidth
               multiline
-              onChange={(event) => setText(event.target.value)}
+              onChange={(event) =>
+                setPostState({
+                  text: event.target.value,
+                  image: postState.image,
+                  formOpen: postState.formOpen
+                })
+              }
               variant={'outlined'}
               sx={{
                 '.MuiOutlinedInput-root': {
@@ -194,14 +246,14 @@ export default function Feed() {
                 }
               }}
               InputProps={{
-                endAdornment: image && (
+                endAdornment: postState.image && (
                   <Box sx={{ pt: 2 }}>
                     <Paper
                       width={'370px'}
                       variant='elevation'
                       elevation={3}
                       component={'img'}
-                      src={URL.createObjectURL(image)}
+                      src={URL.createObjectURL(postState.image)}
                     />
                   </Box>
                 )
@@ -211,7 +263,7 @@ export default function Feed() {
               <Box>
                 <label htmlFor='upload-photo'>
                   <input
-                    disabled={isLoading}
+                    disabled={isPostLoading}
                     style={{ display: 'none' }}
                     id='upload-photo'
                     name='upload-photo'
@@ -219,13 +271,13 @@ export default function Feed() {
                     accept={acceptedImageTypes.join(',')}
                     onChange={onImageChange}
                   />
-                  <Button sx={{ height: '100%' }} disabled={isLoading} component='span' variant='contained'>
+                  <Button sx={{ height: '100%' }} disabled={isPostLoading} component='span' variant='contained'>
                     <AddPhotoAlternateIcon />
                   </Button>
                 </label>
               </Box>
               <Box flexGrow={1} sx={{ pl: 2 }}>
-                <LoadingButton loading={isLoading} type='submit' fullWidth variant='contained'>
+                <LoadingButton loading={isPostLoading} type='submit' fullWidth variant='contained'>
                   Post
                 </LoadingButton>
               </Box>
@@ -233,6 +285,6 @@ export default function Feed() {
           </Box>
         </DialogContent>
       </Dialog>
-    </>
+    </Container>
   );
 }

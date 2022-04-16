@@ -1,5 +1,5 @@
 import { AppBar, Avatar, Badge, Box, Button, Container, Grid, Link, Toolbar } from '@mui/material';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Logo from '../logo.svg';
 import { useContext } from 'react';
 import { GlobalContext } from './GlobalContext';
@@ -20,7 +20,6 @@ export default function NavBar() {
       color: '#44b700',
       borderRadius: '50%',
       width: '4px',
-      // height: '4px',
       boxShadow: `0 0 0 2px ${theme.palette.background.paper}`
     }
   }));
@@ -31,7 +30,7 @@ export default function NavBar() {
         <Container maxWidth='md'>
           <Grid container alignItems='center' justifyContent='space-between'>
             <Grid item>
-              <Link component={RouterLink} to='/'>
+              <Link href='/'>
                 <img src={Logo} alt='CC Logo' height='44rem' />
               </Link>
             </Grid>
@@ -39,18 +38,21 @@ export default function NavBar() {
               {!user ? (
                 <Box display={'flex'} alignItems={'center'}>
                   <Box>
-                    <Button component={RouterLink} to='/signIn' color='inherit'>
+                    <Button href='/signIn' color='inherit'>
                       Sign In
                     </Button>
                   </Box>
                   <Box>
-                    <Button component={RouterLink} to='/signUp' color='inherit'>
+                    <Button href='/signUp' color='inherit'>
                       Sign Up
                     </Button>
                   </Box>
                 </Box>
               ) : (
                 <Box display={'flex'} alignItems={'center'}>
+                  <Button href='/feed' color='inherit'>
+                    Feed
+                  </Button>
                   <Box>
                     <Button onClick={onSignOut} color='inherit'>
                       Sign Out

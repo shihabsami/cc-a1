@@ -1,6 +1,5 @@
 package com.cc.a1.controller;
 
-import com.cc.a1.payload.CommentRequest;
 import com.cc.a1.security.JwtUtility;
 import com.cc.a1.service.CommentsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +25,15 @@ public class CommentsController {
 
     @PostMapping("/add")
     public ResponseEntity<?> add(@RequestHeader(name = AUTHORIZATION_HEADER) String jwt,
-                                 @RequestBody CommentRequest comment) {
+                                 @RequestParam String text, @RequestParam long postId) {
         String username = jwtUtility.extractUsername(jwt.substring(JWT_SCHEME.length() + 1));
-        return new ResponseEntity<>(commentsService.save(comment.getPostId(), username, comment.getText()),
+        return new ResponseEntity<>(commentsService.save(text, postId, username),
                                     HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getByPostId(@RequestParam long postId) {
+        return new ResponseEntity<>(commentsService.getByPostId(postId), HttpStatus.OK);
     }
 
 }

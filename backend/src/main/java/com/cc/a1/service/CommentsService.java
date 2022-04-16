@@ -7,6 +7,8 @@ import com.cc.a1.repository.CommentsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CommentsService {
 
@@ -22,7 +24,7 @@ public class CommentsService {
         this.usersService = usersService;
     }
 
-    public Comment save(long postId, String username, String text) {
+    public Comment save(String text, long postId, String username) {
         Post post = postsService.getPostById(postId);
         User user = usersService.getUserByUsername(username);
         Comment comment = new Comment();
@@ -30,6 +32,10 @@ public class CommentsService {
         comment.setUser(user);
         comment.setText(text);
         return commentsRepository.save(comment);
+    }
+
+    public List<Comment> getByPostId(long postId) {
+        return commentsRepository.findByPost_Id(postId);
     }
 
 }

@@ -1,9 +1,7 @@
 package com.cc.a1.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,7 +9,6 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -21,7 +18,6 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "users")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class User {
 
     @Id
@@ -33,6 +29,12 @@ public class User {
     @Email(message = "Not a valid email.")
     @Pattern(regexp = "^s\\d{7}@student.rmit.edu.au$", message = "Email must be your RMIT student email.")
     private String username;
+
+    @NotBlank(message = "First name cannot be blank.")
+    private String firstName;
+
+    @NotBlank(message = "Last name cannot be blank.")
+    private String lastName;
 
     @NotBlank(message = "Password cannot be blank.")
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -56,26 +58,6 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Comment> comments;
-
-    // The following fields are for debugging purposes only.
-    private Date createdAt;
-    private Date updatedAt;
-
-    /**
-     * Saves the timestamp of creation.
-     */
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = new Date();
-    }
-
-    /**
-     * Updates the timestamp of modification.
-     */
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = new Date();
-    }
 
     /**
      * Enum to identify the different user roles.

@@ -1,7 +1,6 @@
 package com.cc.a1.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +12,6 @@ import javax.validation.constraints.Size;
 @Getter
 @Setter
 @Table(name = "images")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Image {
 
     @Id
@@ -26,10 +24,12 @@ public class Image {
 
     @OneToOne
     @JoinColumn(name = "posts_id")
+    @JsonIgnore
     private Post post;
 
     @OneToOne
     @JoinColumn(name = "users_id")
+    @JsonIgnore
     private User user;
 
 }

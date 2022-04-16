@@ -18,7 +18,13 @@ export const GlobalContextProvider: FunctionComponent<unknown> = ({ children }) 
   const client = useQueryClient();
   const [token, setToken] = useState<string>();
 
-  const { data, refetch, remove, isError } = useQuery<AxiosResponse<User>>('user', () => api.get('/users/profile'));
+  const { data, refetch, remove, isError } = useQuery<AxiosResponse<User>>(
+    'user',
+    () => api.get('/users/getAuthenticated'),
+    {
+      retry: false
+    }
+  );
 
   // On token change, update the header and refetch user.
   useEffect(() => {

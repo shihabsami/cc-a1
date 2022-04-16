@@ -5,9 +5,13 @@ import com.cc.a1.model.Post;
 import com.cc.a1.model.User;
 import com.cc.a1.repository.PostsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static com.cc.a1.misc.Constants.PAGE_SIZE;
 
 @Service
 public class PostsService {
@@ -37,6 +41,23 @@ public class PostsService {
 
     public List<Post> getAllPosts() {
         return postsRepository.findAll();
+    }
+
+    public boolean hasMoreAfter(int page) {
+        return postsRepository.findAll(PageRequest.of(page + 1, PAGE_SIZE)).hasContent();
+    }
+
+    public List<Post> getPosts(int page) {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException exception) {
+            exception.printStackTrace();
+        }
+        return postsRepository.findAll(PageRequest.of(page, PAGE_SIZE, Sort.by("createdAt"))).getContent();
+    }
+
+    public long getPostCount() {
+        return postsRepository.count();
     }
 
 }

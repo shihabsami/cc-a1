@@ -87,12 +87,20 @@ public class UsersController {
     }
 
     /**
-     * Get the profile of an existing user.
+     * Get the currently authenticated user.
      */
-    @GetMapping("/profile")
-    public ResponseEntity<?> viewProfile() throws UserNotFoundException {
+    @GetMapping("/getAuthenticated")
+    public ResponseEntity<?> getAuthenticated() throws UserNotFoundException {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return new ResponseEntity<>(usersService.getUserByUsername(userDetails.getUsername()), HttpStatus.OK);
+    }
+
+    /**
+     * Get an user by id.
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getById(@PathVariable long id) throws UserNotFoundException {
+        return new ResponseEntity<>(usersService.getUserById(id), HttpStatus.OK);
     }
 
 }

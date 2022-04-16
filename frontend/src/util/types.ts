@@ -1,6 +1,8 @@
 export type User = {
   id: number;
   username: string;
+  firstName: string;
+  lastName: string;
   role: Role;
   image?: string;
   createdAt: Date;
@@ -29,19 +31,20 @@ export type Post = {
 export type Image = {
   id: number;
   url: string;
-  post?: Post | number;
-  user?: User | number;
+  post?: Post;
+  user?: User;
 };
 
 export type Like = {
   id: number;
-  user: User | number;
-  post: Post | number;
+  user: User;
+  post: Post;
 };
 
 export type Comment = {
   id: number;
   text: string;
-  user: User | number;
-  post: Post | number;
+  user: User;
+  post: Post;
+  createdAt: Date;
 };
