@@ -29,7 +29,7 @@ import { api } from '../util/api';
 import Collapse from '@mui/material/Collapse';
 import RateReviewTwoToneIcon from '@mui/icons-material/RateReviewTwoTone';
 import DoneAllTwoToneIcon from '@mui/icons-material/DoneAllTwoTone';
-import { useQuery, useQueryClient } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import {
   FacebookIcon,
   FacebookShareButton,
@@ -55,17 +55,17 @@ export default function FeedPost({ post, ...rest }: FeedPostProps) {
 
   const [likes, setLikes] = useState<LikeType[]>();
   const [liked, setLiked] = useState<boolean>();
-  const onLike = () => {
-    api
-      .post(`/likes/${liked ? 'remove' : 'add'}`, null, {
-        params: {
-          postId: post.id
-        }
-      })
-      .then(() => {
-        fetchLikes();
-      });
-  };
+  const { isLoading: isLikeLoading, mutate: mutateLike } = useMutation(async () => {
+    const response = await api.post(`/likes/${liked ? 'remove' : 'add'}`, null, {
+      params: {
+        postId: post.id
+      }
+    });
+
+    await fetchLikes();
+    return response;
+  });
+
   const { isLoading: isLikesLoading, refetch: fetchLikes } = useQuery(
     ['fetchLikes', post.id],
     async ({ queryKey }) => {
@@ -183,13 +183,13 @@ export default function FeedPost({ post, ...rest }: FeedPostProps) {
           </Link>
         )}
         <CardActions disableSpacing sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
-          {isLikesLoading ? (
+          {isLikeLoading || isLikesLoading ? (
             <Button fullWidth disabled>
               {liked ? <ThumbUpAltIcon sx={{ pr: 1 }} color={'primary'} /> : <ThumbUpOffAltIcon sx={{ pr: 1 }} />}
               <CircularProgress size={'1rem'} color='primary' />
             </Button>
           ) : (
-            <Button fullWidth onClick={() => onLike()}>
+            <Button fullWidth onClick={() => mutateLike()}>
               {liked ? <ThumbUpAltIcon color={'primary'} /> : <ThumbUpOffAltIcon />}
               <Typography sx={{ width: '1rem', pl: 1 }}>{likes?.length}</Typography>
             </Button>

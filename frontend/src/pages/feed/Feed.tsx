@@ -102,8 +102,8 @@ export default function Feed() {
     let response;
     if (postState.image) {
       formData.append('image', postState.image);
-      response = await api.post('/posts/saveWithImage', formData, {
-        headers: { 'Content-Type': `multipart/form-data` }
+      response = await api.post('/posts/save/image', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
     } else {
       response = await api.post('/posts/save', formData);

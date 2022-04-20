@@ -72,13 +72,6 @@ public class JwtUtility {
                    .setSubject(username)
                    .setIssuedAt(new Date())
                    .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION_TIME_MILLIS))
-                   /*
-                    * TODO
-                    *  Can opt for a stronger key in the future.
-                    *  SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
-                    *  And save the String representation in a file.
-                    *  String secretString = Encoders.BASE64.encode(key.getEncoded());
-                    */
                    .signWith(Keys.hmacShaKeyFor(JWT_SECRET_KEY.getBytes(StandardCharsets.UTF_8)),
                              SignatureAlgorithm.HS512)
                    .compact();

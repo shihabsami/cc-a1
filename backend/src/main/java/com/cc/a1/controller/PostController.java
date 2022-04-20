@@ -36,7 +36,7 @@ public class PostController {
         return new ResponseEntity<>(postsService.savePost(text, username), HttpStatus.CREATED);
     }
 
-    @PostMapping("/saveWithImage")
+    @PostMapping("/save/image")
     public ResponseEntity<?> saveWithImage(@RequestHeader(name = AUTHORIZATION_HEADER) String jwt,
                                            @RequestParam MultipartFile image, @RequestParam String text) {
         String username = jwtUtility.extractUsername(jwt.substring(JWT_SCHEME.length() + 1));
