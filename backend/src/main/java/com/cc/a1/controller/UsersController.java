@@ -96,7 +96,7 @@ public class UsersController {
     }
 
     /**
-     * Get an user by id.
+     * Get a user by id.
      */
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable long id) throws UserNotFoundException {

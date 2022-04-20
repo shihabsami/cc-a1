@@ -1,50 +1,53 @@
-export type User = {
+export type UserType = {
   id: number;
   username: string;
   firstName: string;
   lastName: string;
-  role: Role;
-  image?: string;
-  createdAt: Date;
-  updatedAt?: Date;
+  role: RoleType;
+  image?: ImageType;
 };
 
-export enum Role {
+export enum RoleType {
   ROLE_USER = 'ROLE_USER',
   ROLE_ADMIN = 'ROLE_ADMIN'
 }
 
-export type SignInResponse = {
+export type SignInResponseType = {
   jwt: string;
-  user: User;
+  user: UserType;
 };
 
-export type Post = {
+export type PostType = {
   id: number;
-  user: User;
-  text: string;
-  image?: Image;
-  likes: Like[];
-  comments: Comment[];
+  user: UserType;
+  text?: string;
+  image?: ImageType;
+  likes: LikeType[];
+  comments: CommentType[];
+  createdAt: Date;
 };
 
-export type Image = {
+export type FetchPostsType = {
+  page: number;
+  hasMore: boolean;
+  posts: PostType[];
+};
+
+export type ImageType = {
   id: number;
   url: string;
-  post?: Post;
-  user?: User;
 };
 
-export type Like = {
+export type LikeType = {
   id: number;
-  user: User;
-  post: Post;
+  user: UserType;
+  post: PostType;
 };
 
-export type Comment = {
+export type CommentType = {
   id: number;
   text: string;
-  user: User;
-  post: Post;
+  user: UserType;
+  post: PostType;
   createdAt: Date;
 };

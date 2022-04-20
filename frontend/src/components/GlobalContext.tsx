@@ -1,13 +1,16 @@
 import React, { createContext, FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
-import { SignInResponse, User } from '../util/types';
+import { SignInResponseType, UserType } from '../util/types';
 import { api } from '../util/api';
-import { AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 
 interface GlobalContextType {
-  user?: User;
+  user?: UserType;
+  isLoading: boolean;
 
-  signIn(data: SignInResponse): void;
+  isSignedIn(): boolean;
+
+  signIn(data: SignInResponseType): void;
 
   signOut(): void;
 }
@@ -18,12 +21,9 @@ export const GlobalContextProvider: FunctionComponent<unknown> = ({ children }) 
   const client = useQueryClient();
   const [token, setToken] = useState<string>();
 
-  const { data, refetch, remove, isError } = useQuery<AxiosResponse<User>>(
-    'user',
-    () => api.get('/users/getAuthenticated'),
-    {
-      retry: false
-    }
+  const { data, refetch, remove, isLoading, isFetching, isError } = useQuery<AxiosResponse<UserType>, AxiosError>(
+    'fetchUser',
+    () => api.get('/users/getAuthenticated')
   );
 
   // On token change, update the header and refetch user.
@@ -45,27 +45,28 @@ export const GlobalContextProvider: FunctionComponent<unknown> = ({ children }) 
   const signOut = useCallback(() => {
     localStorage.removeItem('token');
     setToken(undefined);
-    client.invalidateQueries('user');
+    client.invalidateQueries('fetchUser');
   }, [client]);
 
-  const signIn = (data: SignInResponse) => {
-    localStorage.setItem('token', data.jwt);
-    setToken(data.jwt);
-    client.invalidateQueries('user');
+  const signIn = (signInResponse: SignInResponseType) => {
+    localStorage.setItem('token', signInResponse.jwt);
+    setToken(signInResponse.jwt);
+    client.invalidateQueries('fetchUser');
   };
 
   // Clear token if error.
   useEffect(() => {
     if (isError) {
-      localStorage.removeItem('token');
-      setToken(undefined);
+      signOut();
     }
-  }, [isError]);
+  }, [isError, signOut]);
 
   return (
     <GlobalContext.Provider
       value={{
-        user: token ? data?.data : undefined,
+        user: data?.data as UserType,
+        isSignedIn: () => !!localStorage.getItem('token'),
+        isLoading: token ? isLoading || isFetching : false,
         signIn,
         signOut
       }}

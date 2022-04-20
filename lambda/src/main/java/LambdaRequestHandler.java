@@ -6,9 +6,9 @@ import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification.S3EventNotificationRecord;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -82,9 +82,13 @@ public class LambdaRequestHandler implements RequestHandler<S3Event, String> {
         String destinationObjectKey = Files.getNameWithoutExtension(sourceObjectKey) +
                                       "_" + THUMBNAIL_WIDTH + "x" + THUMBNAIL_HEIGHT + ".jpeg";
         logger.log(String.format("INFO Uploading image as %s/%s", DESTINATION_BUCKET, destinationObjectKey));
+
+        TransferManager transferManager = TransferManagerBuilder.standard().withS3Client(s3Client).build();
         try {
-            s3Client.putObject(DESTINATION_BUCKET, destinationObjectKey, inputStream, metadata);
-        } catch (AmazonServiceException exception) {
+            transferManager.upload(
+                    new PutObjectRequest(DESTINATION_BUCKET, destinationObjectKey, inputStream, metadata)
+                            .withCannedAcl(CannedAccessControlList.PublicRead)).waitForUploadResult();
+        } catch (AmazonServiceException | InterruptedException exception) {
             logger.log("FAILURE: Failed to upload image");
             throw new RuntimeException();
         }

@@ -47,23 +47,13 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> get(@PathVariable long id) {
+    public ResponseEntity<?> getById(@PathVariable long id) {
         return new ResponseEntity<>(postsService.getPostById(id), HttpStatus.OK);
     }
 
     @GetMapping
     public ResponseEntity<?> getPosts(@RequestParam int page) {
         return new ResponseEntity<>(postsService.getPosts(page), HttpStatus.OK);
-    }
-
-    @GetMapping("/count")
-    public ResponseEntity<?> getCount() {
-        return new ResponseEntity<>(postsService.getPostCount(), HttpStatus.OK);
-    }
-
-    @GetMapping("/hasMore")
-    public ResponseEntity<?> hasMoreAfter(@RequestParam int page) {
-        return new ResponseEntity<>(postsService.hasMoreAfter(page), HttpStatus.OK);
     }
 
 }

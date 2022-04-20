@@ -19,8 +19,8 @@ public class WebConfigurer {
             public void addCorsMappings(CorsRegistry registry) {
                 WebMvcConfigurer.super.addCorsMappings(registry);
                 registry.addMapping("/**")
-                        // TODO Allows only the default React port for the frontend. May need to be updated in the future.
-                        .allowedOrigins("*").allowedMethods("GET", "POST", "PUT", "DELETE");
+                        .allowedOrigins("*")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE");
             }
 
         };

@@ -21,12 +21,7 @@ public class ImagesController {
         this.imagesService = imagesService;
     }
 
-    @PostMapping("/savePostImage")
-    public ResponseEntity<?> savePostImage(@RequestParam MultipartFile image, @RequestParam long postId) {
-        return new ResponseEntity<>(imagesService.savePostImage(image, postId), HttpStatus.CREATED);
-    }
-
-    @PostMapping("/saveProfileImage")
+    @PostMapping("/profile/save")
     public ResponseEntity<?> save(@RequestParam MultipartFile image, @RequestParam String username) {
         return new ResponseEntity<>(imagesService.saveProfileImage(image, username), HttpStatus.CREATED);
     }

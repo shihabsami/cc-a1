@@ -13,6 +13,7 @@ import { GlobalContextProvider } from './components/GlobalContext';
 import NavBar from './components/NavBar';
 import UploadProfileImage from './pages/uploadProfileImage/UploadProfileImage';
 import ReactDOM from 'react-dom';
+import Post from './pages/feed/post/Post';
 
 const queryClient = new QueryClient();
 ReactDOM.render(
@@ -29,6 +30,7 @@ ReactDOM.render(
               <Route path='/signUp' element={<SignUp />} />
               <Route path='/feed' element={<Feed />} />
               <Route path='/uploadProfileImage' element={<UploadProfileImage />} />
+              <Route path='/feed/:id' element={<Post />} />
             </Routes>
           </BrowserRouter>
         </GlobalContextProvider>

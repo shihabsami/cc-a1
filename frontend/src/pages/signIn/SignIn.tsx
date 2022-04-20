@@ -10,8 +10,8 @@ import { useMutation } from 'react-query';
 import { AxiosError, AxiosResponse } from 'axios';
 import FormField from '../../components/FormField';
 import { useNavigate } from 'react-router-dom';
-import { Grid } from '@mui/material';
-import { SignInResponse } from '../../util/types';
+import { Grid, Link } from '@mui/material';
+import { SignInResponseType } from '../../util/types';
 import { api } from '../../util/api';
 import { GlobalContext } from '../../components/GlobalContext';
 
@@ -21,12 +21,12 @@ export default function SignIn() {
   const context = useContext(GlobalContext);
   const navigate = useNavigate();
 
-  const { data, error, isSuccess, mutate } = useMutation<AxiosResponse<SignInResponse>, AxiosError>(() => {
-    return api.post('/users/authenticate', {
+  const { data, error, isSuccess, mutate } = useMutation<AxiosResponse<SignInResponseType>, AxiosError>(() =>
+    api.post('/users/authenticate', {
       username: username,
       password: password
-    });
-  });
+    })
+  );
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -82,6 +82,11 @@ export default function SignIn() {
                 margin='normal'
                 required
               />
+            </Grid>
+            <Grid item xs={12}>
+              <Link href={'/signUp'} variant='body2'>
+                {"Don't have an account? Sign up instead"}
+              </Link>
             </Grid>
           </Grid>
           <Button type='submit' fullWidth variant='contained' sx={{ mt: 3, mb: 2 }}>

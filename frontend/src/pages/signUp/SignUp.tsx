@@ -11,7 +11,7 @@ import { useMutation } from 'react-query';
 import FormField from '../../components/FormField';
 import { Link as ReactRouterLink, useNavigate } from 'react-router-dom';
 import { Link } from '@mui/material';
-import { Role, SignInResponse } from '../../util/types';
+import { RoleType, SignInResponseType } from '../../util/types';
 import { api } from '../../util/api';
 import { AxiosError, AxiosResponse } from 'axios';
 import { GlobalContext } from '../../components/GlobalContext';
@@ -26,15 +26,15 @@ export default function SignUp() {
   const context = useContext(GlobalContext);
   const navigate = useNavigate();
 
-  const { data, error, isSuccess, mutate } = useMutation<AxiosResponse<SignInResponse>, AxiosError>(() => {
-    return api.post('/users/register', {
+  const { data, error, isSuccess, mutate } = useMutation<AxiosResponse<SignInResponseType>, AxiosError>(() =>
+    api.post('/users/register', {
       username,
       firstName,
       lastName,
       password,
-      role: Role.ROLE_USER
-    });
-  });
+      role: RoleType.ROLE_USER
+    })
+  );
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -85,7 +85,6 @@ export default function SignUp() {
                 label='Last Name'
                 type='text'
                 autoComplete='lastName'
-                autoFocus
                 onChange={setLastName}
                 errors={error?.response?.data}
                 margin='normal'
@@ -98,7 +97,6 @@ export default function SignUp() {
                 label='Email'
                 type='email'
                 autoComplete='username'
-                autoFocus
                 onChange={setUsername}
                 errors={error?.response?.data}
                 margin='normal'

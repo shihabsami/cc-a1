@@ -10,37 +10,50 @@ import {
   CircularProgress,
   Divider,
   IconButton,
+  Menu,
+  MenuItem,
   Paper,
   TextField,
   Typography
 } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
-import { red } from '@mui/material/colors';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import InsertCommentIcon from '@mui/icons-material/InsertComment';
 import ShareIcon from '@mui/icons-material/Share';
 import * as React from 'react';
 import { useContext, useEffect, useState } from 'react';
-import { Comment, Like, Post } from '../util/types';
+import { CommentType, LikeType, PostType } from '../util/types';
 import { GlobalContext } from './GlobalContext';
 import { api } from '../util/api';
 import Collapse from '@mui/material/Collapse';
 import RateReviewTwoToneIcon from '@mui/icons-material/RateReviewTwoTone';
 import DoneAllTwoToneIcon from '@mui/icons-material/DoneAllTwoTone';
 import { useQuery, useQueryClient } from 'react-query';
+import {
+  FacebookIcon,
+  FacebookShareButton,
+  RedditIcon,
+  RedditShareButton,
+  TwitterIcon,
+  TwitterShareButton
+} from 'react-share';
+import ExpandLessTwoToneIcon from '@mui/icons-material/ExpandLessTwoTone';
+import Comments from './Comments';
 import moment from 'moment';
+import UserAvatar from './UserAvatar';
+import Link from '@mui/material/Link';
 
-export interface PostProps extends CardProps {
-  post: Post;
+interface FeedPostProps extends CardProps {
+  post: PostType;
 }
 
-export default function FeedPost({ post, ...rest }: PostProps) {
+export default function FeedPost({ post, ...rest }: FeedPostProps) {
   const { user } = useContext(GlobalContext);
   const client = useQueryClient();
+  const userFullName = post.user.firstName.concat(' ', post.user.lastName);
 
-  const [likes, setLikes] = useState<Like[]>();
+  const [likes, setLikes] = useState<LikeType[]>();
   const [liked, setLiked] = useState<boolean>();
   const onLike = () => {
     api
@@ -64,7 +77,7 @@ export default function FeedPost({ post, ...rest }: PostProps) {
           }
         })
         .then((response) => {
-          const likesResponse = response.data as Like[];
+          const likesResponse = response.data as LikeType[];
           setLiked(() => likesResponse.some((like) => user?.id == like.user.id));
           setLikes(likesResponse);
         });
@@ -79,10 +92,9 @@ export default function FeedPost({ post, ...rest }: PostProps) {
     }
   );
 
-  const [comments, setComments] = useState<Comment[]>();
+  const [comments, setComments] = useState<CommentType[]>();
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [commentText, setCommentText] = useState('');
-
   const { isLoading: isCommentsLoading, refetch: fetchComments } = useQuery(
     ['fetchComments', post.id],
     async ({ queryKey }) => {
@@ -94,7 +106,7 @@ export default function FeedPost({ post, ...rest }: PostProps) {
           }
         })
         .then((response) => {
-          setComments(response.data as Comment[]);
+          setComments(response.data as CommentType[]);
         });
     },
     {
@@ -106,11 +118,6 @@ export default function FeedPost({ post, ...rest }: PostProps) {
       refetchOnReconnect: false
     }
   );
-  useEffect(() => {
-    fetchLikes();
-    fetchComments();
-  }, [fetchLikes, fetchComments]);
-
   const postComment = () => {
     if (commentText) {
       api
@@ -127,59 +134,106 @@ export default function FeedPost({ post, ...rest }: PostProps) {
     }
   };
 
+  const shareTitle = post.text ? `"${post.text}"` : `Check out this post on CC A1 by ${userFullName}.`;
+  const shareUrl = `${window.location.href}/${post.id}`;
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const shareOpen = Boolean(anchorEl);
+  const handleShareClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleShareClose = () => {
+    setAnchorEl(null);
+  };
+
+  useEffect(() => {
+    fetchLikes();
+    fetchComments();
+  }, [fetchLikes, fetchComments]);
+
   return (
-    <div>
+    <>
       <Card {...rest} variant={'outlined'} sx={{ mt: '2rem' }}>
         <CardHeader
-          avatar={
-            <Avatar sx={{ bgcolor: red[500] }} aria-label='recipe'>
-              R
-            </Avatar>
-          }
-          action={
-            <IconButton aria-label='settings'>
-              <MoreVertIcon />
-            </IconButton>
-          }
-          title={post.text}
-          subheader='September 14, 2016'
-        />
-        <CardContent>
-          <Typography variant='body2' color='text.secondary'>
-            This impressive paella is a perfect party dish and a fun meal to cook together with your guests. Add 1 cup
-            of frozen peas along with the mussels, if you like.
-          </Typography>
-        </CardContent>
-        <CardMedia
-          component='img'
+          avatar={<UserAvatar user={post.user} alt={'Post User Image'} />}
+          title={userFullName}
+          subheader={moment(post.createdAt).fromNow()}
           sx={{
-            backgroundColor: '#ff0000'
+            '.MuiCardHeader-title': {
+              fontWeight: 'bold'
+            }
           }}
-          image={`https://picsum.photos/512/512`}
-          alt='Paella dish'
         />
+        {post.text && (
+          <Link href={`/feed/${post.id}`} underline={'none'} color={'inherit'}>
+            <CardContent>
+              <Typography variant='body2'>{post.text}</Typography>
+            </CardContent>
+          </Link>
+        )}
+        {post.image && (
+          <Link href={`/feed/${post.id}`}>
+            <CardMedia
+              component='img'
+              sx={{
+                backgroundColor: '#ffffff'
+              }}
+              image={post.image.url}
+              alt='Post Image'
+            />
+          </Link>
+        )}
         <CardActions disableSpacing sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
           {isLikesLoading ? (
-            <CircularProgress size={24} color='primary' />
+            <Button fullWidth disabled>
+              {liked ? <ThumbUpAltIcon sx={{ pr: 1 }} color={'primary'} /> : <ThumbUpOffAltIcon sx={{ pr: 1 }} />}
+              <CircularProgress size={'1rem'} color='primary' />
+            </Button>
           ) : (
             <Button fullWidth onClick={() => onLike()}>
               {liked ? <ThumbUpAltIcon color={'primary'} /> : <ThumbUpOffAltIcon />}
               <Typography sx={{ width: '1rem', pl: 1 }}>{likes?.length}</Typography>
             </Button>
           )}
-          <Button fullWidth onClick={() => setCommentsOpen((prevState) => !prevState)}>
-            <InsertCommentIcon />
-            <Typography sx={{ width: '1rem', pl: 1 }}>{comments?.length}</Typography>
-          </Button>
-          <Button fullWidth>
+          {isCommentsLoading ? (
+            <Button fullWidth disabled>
+              <InsertCommentIcon sx={{ pr: 1 }} />
+              <CircularProgress size={'1rem'} color='primary' />
+            </Button>
+          ) : (
+            <Button fullWidth onClick={() => setCommentsOpen((prevState) => !prevState)}>
+              {commentsOpen ? <ExpandLessTwoToneIcon /> : <InsertCommentIcon />}
+              <Typography sx={{ width: '1rem', pl: 1 }}>{comments?.length}</Typography>
+            </Button>
+          )}
+          <Button fullWidth onClick={handleShareClick}>
             <ShareIcon />
           </Button>
+          <Menu anchorEl={anchorEl} open={shareOpen} onClose={handleShareClose} disableScrollLock>
+            <MenuItem onClick={handleShareClose}>
+              <FacebookShareButton style={{ display: 'inline-flex' }} url={shareUrl} title={shareTitle}>
+                <FacebookIcon size={32} round />
+                <Typography sx={{ pl: 1 }}>Facebook</Typography>
+              </FacebookShareButton>
+            </MenuItem>
+            <MenuItem onClick={handleShareClose}>
+              <TwitterShareButton style={{ display: 'inline-flex' }} url={shareUrl} title={shareTitle}>
+                <TwitterIcon size={32} round />
+                <Typography sx={{ pl: 1 }}>Twitter</Typography>
+              </TwitterShareButton>
+            </MenuItem>
+            <MenuItem onClick={handleShareClose}>
+              <RedditShareButton style={{ display: 'inline-flex' }} url={shareUrl} title={shareTitle}>
+                <RedditIcon size={32} round />
+                <Typography sx={{ pl: 1 }}>Reddit</Typography>
+              </RedditShareButton>
+            </MenuItem>
+          </Menu>
         </CardActions>
       </Card>
       <Collapse in={commentsOpen}>
-        <Paper variant={'outlined'} style={{ border: '1px #e0e0e0 solid', borderTop: '0px' }}>
+        <Paper variant={'outlined'} style={{ border: '1px #e0e0e0 solid', borderTop: 0 }}>
           <Box display={'flex'} p={2} alignItems={'center'}>
-            <Avatar sx={{ bgcolor: '#b39ddb' }}>
+            <Avatar sx={{ bgcolor: '#c4c4c4' }}>
               <RateReviewTwoToneIcon />
             </Avatar>
             <TextField
@@ -202,35 +256,10 @@ export default function FeedPost({ post, ...rest }: PostProps) {
               <DoneAllTwoToneIcon />
             </IconButton>
           </Box>
-          <Divider />
-          {isCommentsLoading ? (
-            <CircularProgress size={24} color='primary' />
-          ) : (
-            comments &&
-            comments.map((c, i) => {
-              return (
-                <Box key={c.id}>
-                  <Box display={'flex'} p={2} alignItems={'center'}>
-                    <Avatar sx={{ bgcolor: red[500] }}>R</Avatar>
-                    <Box sx={{ pl: 2 }}>
-                      <Box display={'inline-flex'}>
-                        <Typography sx={{ pr: 1 }} fontWeight={'bold'} variant={'body2'}>
-                          {c.user.firstName.concat(' ', c.user.lastName)}
-                        </Typography>
-                        <Typography variant={'body2'} color={'gray'}>
-                          {moment(c.createdAt).fromNow()}
-                        </Typography>
-                      </Box>
-                      <Typography variant={'body1'}>{c.text}</Typography>
-                    </Box>
-                  </Box>
-                  {i < comments.length - 1 && <Divider />}
-                </Box>
-              );
-            })
-          )}
+          {comments?.length != 0 && <Divider />}
+          {isCommentsLoading ? <CircularProgress size={24} color='primary' /> : <Comments comments={comments} />}
         </Paper>
       </Collapse>
-    </div>
+    </>
   );
 }

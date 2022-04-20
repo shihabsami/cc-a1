@@ -1,47 +1,50 @@
 import { Button, Container, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import * as React from 'react';
 import { useContext, useEffect, useState } from 'react';
-import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useMutation } from 'react-query';
 import { api } from '../../util/api';
 import { GlobalContext } from '../../components/GlobalContext';
 import LoadingButton from '../../components/LoadingButton';
 import ProfileImage from '../../components/ProfileImage';
+import AddPhotoAlternateRoundedIcon from '@mui/icons-material/AddPhotoAlternateRounded';
+import { acceptedImageTypes } from '../../util/constants';
 
 export default function UploadProfileImage() {
-  const { user } = useContext(GlobalContext);
+  const { user, isLoading, isSignedIn } = useContext(GlobalContext);
   const navigate = useNavigate();
-  const [image, setImage] = useState<File>();
-  const acceptedImageTypes = ['image/jpeg', 'image/png'];
 
+  const [image, setImage] = useState<File>();
   const onImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.item(0);
     if (file && acceptedImageTypes.includes(file.type)) {
       setImage(file);
     } else {
-      setImage(undefined);
+      !image && setImage(undefined);
     }
   };
 
-  const { isLoading, isSuccess, mutate } = useMutation(() => {
+  const {
+    isLoading: isImageLoading,
+    isSuccess: isImageSuccess,
+    mutate: mutateImage
+  } = useMutation(() => {
     const formData = new FormData();
     image && formData.append('image', image);
     user && formData.append('username', user.username);
-    console.log(formData);
-    return api.post('/images/saveProfileImage', formData, { headers: { 'Content-Type': `multipart/form-data` } });
+    console.log('formData', formData);
+    return api.post('/images/profile/save', formData, { headers: { 'Content-Type': `multipart/form-data` } });
   });
 
-  const saveImage = () => {
-    mutate();
-  };
+  useEffect(() => {
+    if (isImageSuccess) return navigate('/feed');
+  }, [isImageSuccess, navigate]);
 
   useEffect(() => {
-    if (isSuccess) {
-      return navigate('/feed');
+    if (!isLoading && !isSignedIn()) {
+      return navigate('/signin');
     }
-  }, [navigate, isSuccess]);
+  }, [isLoading, isSignedIn, navigate]);
 
   return (
     <Container component='div' maxWidth='md'>
@@ -58,7 +61,7 @@ export default function UploadProfileImage() {
         <Grid item xs={12} sx={{ mt: 3 }}>
           <label htmlFor='upload-photo'>
             <input
-              disabled={isLoading}
+              disabled={isImageLoading}
               style={{ display: 'none' }}
               id='upload-photo'
               name='upload-photo'
@@ -67,13 +70,13 @@ export default function UploadProfileImage() {
               onChange={onImageChange}
             />
             <Button
-              disabled={isLoading}
+              disabled={isImageLoading}
               sx={{ p: 1, width: '16rem' }}
               aria-label='add'
               component='span'
               variant='contained'
             >
-              <AddAPhotoIcon fontSize={'small'} sx={{ pl: 0, ml: 0 }} />
+              <AddPhotoAlternateRoundedIcon fontSize={'small'} sx={{ pl: 0, ml: 0 }} />
               <Typography sx={{ pl: 1 }} variant={'body2'} textTransform={'none'}>
                 {image ? 'Try Again' : 'Upload Image'}
               </Typography>
@@ -82,7 +85,12 @@ export default function UploadProfileImage() {
         </Grid>
         {image && (
           <Grid item xs={12}>
-            <LoadingButton sx={{ width: '16rem' }} loading={isLoading} onClick={saveImage} variant='contained'>
+            <LoadingButton
+              sx={{ width: '16rem' }}
+              loading={isImageLoading}
+              onClick={() => mutateImage()}
+              variant='contained'
+            >
               <Typography sx={{ pl: 1 }} variant={'body2'} textTransform={'none'}>
                 Looks Good!
               </Typography>
@@ -90,7 +98,7 @@ export default function UploadProfileImage() {
           </Grid>
         )}
         <Grid item xs={12}>
-          <Button sx={{ width: '16rem' }} disabled={isLoading} component={RouterLink} to='/feed' variant='text'>
+          <Button sx={{ width: '16rem' }} disabled={isImageLoading} component={RouterLink} to='/feed' variant='text'>
             <Typography sx={{ pl: 1 }} variant={'body2'} textTransform={'none'}>
               Skip
             </Typography>

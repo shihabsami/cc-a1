@@ -27,8 +27,7 @@ public class CommentsController {
     public ResponseEntity<?> add(@RequestHeader(name = AUTHORIZATION_HEADER) String jwt,
                                  @RequestParam String text, @RequestParam long postId) {
         String username = jwtUtility.extractUsername(jwt.substring(JWT_SCHEME.length() + 1));
-        return new ResponseEntity<>(commentsService.save(text, postId, username),
-                                    HttpStatus.CREATED);
+        return new ResponseEntity<>(commentsService.save(text, postId, username), HttpStatus.CREATED);
     }
 
     @GetMapping

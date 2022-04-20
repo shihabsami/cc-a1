@@ -1,9 +1,10 @@
-import { AppBar, Avatar, Badge, Box, Button, Container, Grid, Link, Toolbar } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { AppBar, Badge, Box, Button, Container, Grid, Link, Toolbar } from '@mui/material';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import Logo from '../logo.svg';
 import { useContext } from 'react';
 import { GlobalContext } from './GlobalContext';
 import { styled } from '@mui/material/styles';
+import UserAvatar from './UserAvatar';
 
 export default function NavBar() {
   const { user, signOut } = useContext(GlobalContext);
@@ -13,7 +14,6 @@ export default function NavBar() {
     navigate('/');
   };
 
-  const color = '#ffffff';
   const StyledBadge = styled(Badge)(({ theme }) => ({
     '& .MuiBadge-badge': {
       backgroundColor: '#44b700',
@@ -25,13 +25,13 @@ export default function NavBar() {
   }));
 
   return (
-    <AppBar position='sticky'>
+    <AppBar position='sticky' sx={{ height: '4rem' }}>
       <Toolbar>
-        <Container maxWidth='md'>
+        <Container maxWidth='lg'>
           <Grid container alignItems='center' justifyContent='space-between'>
             <Grid item>
-              <Link href='/'>
-                <img src={Logo} alt='CC Logo' height='44rem' />
+              <Link component={RouterLink} to='/'>
+                <img src={Logo} alt='CC Logo' height={'44rem'} />
               </Link>
             </Grid>
             <Grid item>
@@ -64,10 +64,10 @@ export default function NavBar() {
                       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                       variant='dot'
                     >
-                      <Avatar
-                        sx={{ border: `2px solid ${color}`, width: 42, height: 42 }}
-                        alt='Profile Image'
-                        src='https://picsum.photos/128/128'
+                      <UserAvatar
+                        user={user}
+                        alt={'Profile Image'}
+                        sx={{ border: `2px solid #ffffff`, width: 42, height: 42 }}
                       />
                     </StyledBadge>
                   </Box>
