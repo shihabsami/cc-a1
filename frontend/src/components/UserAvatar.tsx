@@ -1,5 +1,4 @@
-import Avatar from '@mui/material/Avatar';
-import { AvatarProps } from '@mui/material';
+import { Avatar, AvatarProps } from '@mui/material';
 import { UserType } from '../util/types';
 
 export interface UserAvatarProps extends AvatarProps {

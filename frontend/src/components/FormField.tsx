@@ -1,4 +1,3 @@
-import React from 'react';
 import { TextField, TextFieldProps } from '@mui/material';
 
 /**
@@ -11,11 +10,15 @@ function FormField({ onChange, name, errors, ...rest }: FormFieldProps) {
       name={name}
       error={!!errors?.[name]}
       helperText={errors?.[name]}
-      variant='outlined'
       fullWidth
-      onChange={(event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) =>
-        onChange && onChange(event.target.value)
-      }
+      variant='outlined'
+      margin='normal'
+      onChange={(event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+        // Clear error on change.
+        if (errors != undefined) errors.name = '';
+
+        onChange && onChange(event.target.value);
+      }}
     />
   );
 }

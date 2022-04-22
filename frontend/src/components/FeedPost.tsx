@@ -1,4 +1,9 @@
+import { useContext, useEffect, useState } from 'react';
+import { AxiosResponse } from 'axios';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
+import moment from 'moment';
 import {
+  Avatar,
   Box,
   Button,
   Card,
@@ -8,28 +13,28 @@ import {
   CardMedia,
   CardProps,
   CircularProgress,
+  Collapse,
   Divider,
   IconButton,
+  Link,
   Menu,
   MenuItem,
   Paper,
   TextField,
   Typography
 } from '@mui/material';
-import Avatar from '@mui/material/Avatar';
-import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
-import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
-import InsertCommentIcon from '@mui/icons-material/InsertComment';
-import ShareIcon from '@mui/icons-material/Share';
-import * as React from 'react';
-import { useContext, useEffect, useState } from 'react';
-import { CommentType, LikeType, PostType } from '../util/types';
+import {
+  DoneAllTwoTone,
+  ExpandLessTwoTone,
+  InsertComment,
+  Share,
+  ThumbUpAlt,
+  RateReviewTwoTone,
+  ThumbUpOffAlt
+} from '@mui/icons-material';
 import { GlobalContext } from './GlobalContext';
+import { CommentType, LikeType, PostType } from '../util/types';
 import { api } from '../util/api';
-import Collapse from '@mui/material/Collapse';
-import RateReviewTwoToneIcon from '@mui/icons-material/RateReviewTwoTone';
-import DoneAllTwoToneIcon from '@mui/icons-material/DoneAllTwoTone';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
 import {
   FacebookIcon,
   FacebookShareButton,
@@ -38,11 +43,8 @@ import {
   TwitterIcon,
   TwitterShareButton
 } from 'react-share';
-import ExpandLessTwoToneIcon from '@mui/icons-material/ExpandLessTwoTone';
 import Comments from './Comments';
-import moment from 'moment';
 import UserAvatar from './UserAvatar';
-import Link from '@mui/material/Link';
 
 interface FeedPostProps extends CardProps {
   post: PostType;
@@ -51,8 +53,8 @@ interface FeedPostProps extends CardProps {
 export default function FeedPost({ post, ...rest }: FeedPostProps) {
   const { user } = useContext(GlobalContext);
   const client = useQueryClient();
-  const userFullName = post.user.firstName.concat(' ', post.user.lastName);
 
+  const userFullName = post.user.firstName.concat(' ', post.user.lastName);
   const [likes, setLikes] = useState<LikeType[]>();
   const [liked, setLiked] = useState<boolean>();
   const { isLoading: isLikeLoading, mutate: mutateLike } = useMutation(async () => {
@@ -76,8 +78,8 @@ export default function FeedPost({ post, ...rest }: FeedPostProps) {
             postId: postId
           }
         })
-        .then((response) => {
-          const likesResponse = response.data as LikeType[];
+        .then((response: AxiosResponse<LikeType[]>) => {
+          const likesResponse = response.data;
           setLiked(() => likesResponse.some((like) => user?.id == like.user.id));
           setLikes(likesResponse);
         });
@@ -105,8 +107,8 @@ export default function FeedPost({ post, ...rest }: FeedPostProps) {
             postId: postId
           }
         })
-        .then((response) => {
-          setComments(response.data as CommentType[]);
+        .then((response: AxiosResponse<CommentType[]>) => {
+          setComments(response.data);
         });
     },
     {
@@ -136,7 +138,7 @@ export default function FeedPost({ post, ...rest }: FeedPostProps) {
 
   const shareTitle = post.text ? `"${post.text}"` : `Check out this post on CC A1 by ${userFullName}.`;
   const shareUrl = `${window.location.href}/${post.id}`;
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const shareOpen = Boolean(anchorEl);
   const handleShareClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -152,9 +154,9 @@ export default function FeedPost({ post, ...rest }: FeedPostProps) {
 
   return (
     <>
-      <Card {...rest} variant={'outlined'} sx={{ mt: '2rem' }}>
+      <Card {...rest} variant='outlined' sx={{ mt: '2rem' }}>
         <CardHeader
-          avatar={<UserAvatar user={post.user} alt={'Post User Image'} />}
+          avatar={<UserAvatar user={post.user} alt='Post User Image' />}
           title={userFullName}
           subheader={moment(post.createdAt).fromNow()}
           sx={{
@@ -164,7 +166,7 @@ export default function FeedPost({ post, ...rest }: FeedPostProps) {
           }}
         />
         {post.text && (
-          <Link href={`/feed/${post.id}`} underline={'none'} color={'inherit'}>
+          <Link href={`/feed/${post.id}`} underline='none' color='inherit'>
             <CardContent>
               <Typography variant='body2'>{post.text}</Typography>
             </CardContent>
@@ -185,28 +187,28 @@ export default function FeedPost({ post, ...rest }: FeedPostProps) {
         <CardActions disableSpacing sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
           {isLikeLoading || isLikesLoading ? (
             <Button fullWidth disabled>
-              {liked ? <ThumbUpAltIcon sx={{ pr: 1 }} color={'primary'} /> : <ThumbUpOffAltIcon sx={{ pr: 1 }} />}
-              <CircularProgress size={'1rem'} color='primary' />
+              {liked ? <ThumbUpAlt sx={{ pr: 1 }} color='primary' /> : <ThumbUpOffAlt sx={{ pr: 1 }} />}
+              <CircularProgress size='1rem' color='primary' />
             </Button>
           ) : (
             <Button fullWidth onClick={() => mutateLike()}>
-              {liked ? <ThumbUpAltIcon color={'primary'} /> : <ThumbUpOffAltIcon />}
+              {liked ? <ThumbUpAlt color='primary' /> : <ThumbUpOffAlt />}
               <Typography sx={{ width: '1rem', pl: 1 }}>{likes?.length}</Typography>
             </Button>
           )}
           {isCommentsLoading ? (
             <Button fullWidth disabled>
-              <InsertCommentIcon sx={{ pr: 1 }} />
-              <CircularProgress size={'1rem'} color='primary' />
+              <InsertComment sx={{ pr: 1 }} />
+              <CircularProgress size='1rem' color='primary' />
             </Button>
           ) : (
             <Button fullWidth onClick={() => setCommentsOpen((prevState) => !prevState)}>
-              {commentsOpen ? <ExpandLessTwoToneIcon /> : <InsertCommentIcon />}
+              {commentsOpen ? <ExpandLessTwoTone /> : <InsertComment />}
               <Typography sx={{ width: '1rem', pl: 1 }}>{comments?.length}</Typography>
             </Button>
           )}
           <Button fullWidth onClick={handleShareClick}>
-            <ShareIcon />
+            <Share />
           </Button>
           <Menu anchorEl={anchorEl} open={shareOpen} onClose={handleShareClose} disableScrollLock>
             <MenuItem onClick={handleShareClose}>
@@ -231,10 +233,10 @@ export default function FeedPost({ post, ...rest }: FeedPostProps) {
         </CardActions>
       </Card>
       <Collapse in={commentsOpen}>
-        <Paper variant={'outlined'} style={{ border: '1px #e0e0e0 solid', borderTop: 0 }}>
-          <Box display={'flex'} p={2} alignItems={'center'}>
+        <Paper variant='outlined' style={{ border: '1px #e0e0e0 solid', borderTop: 0 }}>
+          <Box display='flex' p={2} alignItems='center'>
             <Avatar sx={{ bgcolor: '#c4c4c4' }}>
-              <RateReviewTwoToneIcon />
+              <RateReviewTwoTone />
             </Avatar>
             <TextField
               onKeyPress={(event) => {
@@ -253,7 +255,7 @@ export default function FeedPost({ post, ...rest }: FeedPostProps) {
               sx={{ pl: 2, pr: 1 }}
             />
             <IconButton onClick={() => postComment()}>
-              <DoneAllTwoToneIcon />
+              <DoneAllTwoTone />
             </IconButton>
           </Box>
           {comments?.length != 0 && <Divider />}

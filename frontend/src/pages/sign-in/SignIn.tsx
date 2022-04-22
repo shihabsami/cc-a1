@@ -1,27 +1,22 @@
-import * as React from 'react';
 import { useContext, useEffect, useState } from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import { useMutation } from 'react-query';
 import { AxiosError, AxiosResponse } from 'axios';
-import FormField from '../../components/FormField';
+import { useMutation } from 'react-query';
 import { useNavigate } from 'react-router-dom';
-import { Grid, Link } from '@mui/material';
+import { Avatar, Box, Button, Container, Grid, Link, Typography } from '@mui/material';
+import { LockOutlined } from '@mui/icons-material';
+import { GlobalContext } from '../../components/GlobalContext';
 import { SignInResponseType } from '../../util/types';
 import { api } from '../../util/api';
-import { GlobalContext } from '../../components/GlobalContext';
+import FormField from '../../components/FormField';
+import ErrorSnackbar from '../../components/ErrorSnackbar';
 
 export default function SignIn() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState<string>();
+  const [password, setPassword] = useState<string>();
   const context = useContext(GlobalContext);
   const navigate = useNavigate();
 
-  const { data, error, isSuccess, mutate } = useMutation<AxiosResponse<SignInResponseType>, AxiosError>(() =>
+  const { data, isSuccess, error, isError, mutate } = useMutation<AxiosResponse<SignInResponseType>, AxiosError>(() =>
     api.post('/users/authenticate', {
       username: username,
       password: password
@@ -38,10 +33,10 @@ export default function SignIn() {
       context.signIn(data.data);
       return navigate('/feed');
     }
-  }, [context, data, isSuccess, navigate]);
+  }, [isSuccess, data, context, navigate]);
 
   return (
-    <Container component='div' maxWidth='xs'>
+    <Container maxWidth='xs'>
       <Box
         sx={{
           marginTop: 8,
@@ -51,7 +46,7 @@ export default function SignIn() {
         }}
       >
         <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-          <LockOutlinedIcon />
+          <LockOutlined />
         </Avatar>
         <Typography component='h1' variant='h5'>
           Sign in
@@ -61,13 +56,12 @@ export default function SignIn() {
             <Grid item xs={12}>
               <FormField
                 name='username'
-                label='Username'
+                label='Email'
                 type='email'
-                autoComplete='username'
+                autoComplete='email'
                 autoFocus
                 onChange={setUsername}
                 errors={error?.response?.data}
-                margin='normal'
                 required
               />
             </Grid>
@@ -83,17 +77,20 @@ export default function SignIn() {
                 required
               />
             </Grid>
-            <Grid item xs={12}>
-              <Link href={'/signUp'} variant='body2'>
-                {"Don't have an account? Sign up instead"}
-              </Link>
-            </Grid>
           </Grid>
           <Button type='submit' fullWidth variant='contained' sx={{ mt: 3, mb: 2 }}>
             Sign In
           </Button>
+          <Grid container justifyContent='flex-end'>
+            <Grid item>
+              <Link href='/sign-up' variant='body2'>
+                Don&apos;t have an account? Sign up instead
+              </Link>
+            </Grid>
+          </Grid>
         </Box>
       </Box>
+      <ErrorSnackbar open={isError} message='Sign in failed. Please try again.' />
     </Container>
   );
 }

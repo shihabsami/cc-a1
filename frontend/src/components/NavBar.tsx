@@ -1,14 +1,14 @@
-import { AppBar, Badge, Box, Button, Container, Grid, Link, Toolbar } from '@mui/material';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import Logo from '../logo.svg';
 import { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AppBar, Badge, Box, Button, Container, Grid, Link, styled, Toolbar } from '@mui/material';
 import { GlobalContext } from './GlobalContext';
-import { styled } from '@mui/material/styles';
 import UserAvatar from './UserAvatar';
+import Logo from '../logo.svg';
 
 export default function NavBar() {
   const { user, signOut } = useContext(GlobalContext);
   const navigate = useNavigate();
+
   const onSignOut = () => {
     signOut();
     navigate('/');
@@ -30,26 +30,26 @@ export default function NavBar() {
         <Container maxWidth='lg'>
           <Grid container alignItems='center' justifyContent='space-between'>
             <Grid item>
-              <Link component={RouterLink} to='/'>
-                <img src={Logo} alt='CC Logo' height={'44rem'} />
+              <Link href='/'>
+                <img src={Logo} alt='CC Logo' height='44rem' />
               </Link>
             </Grid>
             <Grid item>
               {!user ? (
-                <Box display={'flex'} alignItems={'center'}>
+                <Box display='flex' alignItems='center'>
                   <Box>
-                    <Button href='/signIn' color='inherit'>
+                    <Button href='/sign-in' color='inherit'>
                       Sign In
                     </Button>
                   </Box>
                   <Box>
-                    <Button href='/signUp' color='inherit'>
+                    <Button href='/sign-up' color='inherit'>
                       Sign Up
                     </Button>
                   </Box>
                 </Box>
               ) : (
-                <Box display={'flex'} alignItems={'center'}>
+                <Box display='flex' alignItems='center'>
                   <Button href='/feed' color='inherit'>
                     Feed
                   </Button>
@@ -66,7 +66,7 @@ export default function NavBar() {
                     >
                       <UserAvatar
                         user={user}
-                        alt={'Profile Image'}
+                        alt='Profile Image'
                         sx={{ border: `2px solid #ffffff`, width: 42, height: 42 }}
                       />
                     </StyledBadge>

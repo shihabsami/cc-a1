@@ -1,5 +1,4 @@
-import { styled } from '@mui/material/styles';
-import { Avatar, AvatarProps, Badge } from '@mui/material';
+import { Avatar, AvatarProps, Badge, styled } from '@mui/material';
 
 export default function ProfileImage(props: AvatarProps) {
   const StyledBadge = styled(Badge)(({ theme }) => ({

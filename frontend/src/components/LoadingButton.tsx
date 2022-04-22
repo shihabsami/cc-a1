@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button, ButtonProps, CircularProgress, ThemeProvider } from '@mui/material';
 import theme from '../util/theme';
 

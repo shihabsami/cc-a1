@@ -1,20 +1,14 @@
-import * as React from 'react';
 import { useContext, useEffect, useState } from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
+import { AxiosError, AxiosResponse } from 'axios';
 import { useMutation } from 'react-query';
-import FormField from '../../components/FormField';
-import { Link as ReactRouterLink, useNavigate } from 'react-router-dom';
-import { Link } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { Avatar, Box, Button, Container, Grid, Link, Typography } from '@mui/material';
+import { LockOutlined } from '@mui/icons-material';
+import { GlobalContext } from '../../components/GlobalContext';
 import { RoleType, SignInResponseType } from '../../util/types';
 import { api } from '../../util/api';
-import { AxiosError, AxiosResponse } from 'axios';
-import { GlobalContext } from '../../components/GlobalContext';
+import FormField from '../../components/FormField';
+import ErrorSnackbar from '../../components/ErrorSnackbar';
 
 export default function SignUp() {
   const [username, setUsername] = useState('');
@@ -26,7 +20,7 @@ export default function SignUp() {
   const context = useContext(GlobalContext);
   const navigate = useNavigate();
 
-  const { data, error, isSuccess, mutate } = useMutation<AxiosResponse<SignInResponseType>, AxiosError>(() =>
+  const { data, isSuccess, error, isError, mutate } = useMutation<AxiosResponse<SignInResponseType>, AxiosError>(() =>
     api.post('/users/register', {
       username,
       firstName,
@@ -44,12 +38,12 @@ export default function SignUp() {
   useEffect(() => {
     if (isSuccess && data) {
       context.signIn(data.data);
-      return navigate('/uploadProfileImage');
+      return navigate('/upload-user-image');
     }
   }, [context, data, isSuccess, navigate]);
 
   return (
-    <Container component='div' maxWidth='xs'>
+    <Container maxWidth='xs'>
       <Box
         sx={{
           marginTop: 8,
@@ -59,35 +53,33 @@ export default function SignUp() {
         }}
       >
         <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-          <AccountCircleIcon />
+          <LockOutlined />
         </Avatar>
         <Typography component='h1' variant='h5'>
           Register
         </Typography>
         <Box component='form' noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
-          <Grid container spacing={1}>
-            <Grid item xs={6}>
+          <Grid container>
+            <Grid item xs={6} sx={{ pr: 1 }}>
               <FormField
                 name='firstName'
                 label='First Name'
                 type='text'
-                autoComplete='firstName'
+                autoComplete='given-name'
                 autoFocus
                 onChange={setFirstName}
                 errors={error?.response?.data}
-                margin='normal'
                 required
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={6} sx={{ pl: 1 }}>
               <FormField
                 name='lastName'
                 label='Last Name'
                 type='text'
-                autoComplete='lastName'
+                autoComplete='family-name'
                 onChange={setLastName}
                 errors={error?.response?.data}
-                margin='normal'
                 required
               />
             </Grid>
@@ -96,10 +88,9 @@ export default function SignUp() {
                 name='username'
                 label='Email'
                 type='email'
-                autoComplete='username'
+                autoComplete='email'
                 onChange={setUsername}
                 errors={error?.response?.data}
-                margin='normal'
                 required
               />
             </Grid>
@@ -111,7 +102,6 @@ export default function SignUp() {
                 autoComplete='new-password'
                 onChange={setPassword}
                 errors={error?.response?.data}
-                margin='normal'
                 required
               />
             </Grid>
@@ -120,7 +110,6 @@ export default function SignUp() {
                 name='confirmPassword'
                 label='Confirm Password'
                 type='password'
-                autoComplete='confirm-password'
                 onChange={setConfirmPassword}
                 errors={
                   passwordsMatchingError
@@ -129,9 +118,7 @@ export default function SignUp() {
                       }
                     : undefined
                 }
-                margin='normal'
                 required
-                fullWidth
               />
             </Grid>
           </Grid>
@@ -140,13 +127,14 @@ export default function SignUp() {
           </Button>
           <Grid container justifyContent='flex-end'>
             <Grid item>
-              <Link component={ReactRouterLink} to='/signIn' variant='body2'>
+              <Link href='/sign-in' variant='body2'>
                 Already have an account? Sign in instead
               </Link>
             </Grid>
           </Grid>
         </Box>
       </Box>
+      <ErrorSnackbar open={isError} message='Sign up failed. Please try again.' />
     </Container>
   );
 }

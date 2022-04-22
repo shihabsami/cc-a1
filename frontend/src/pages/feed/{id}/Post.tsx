@@ -1,3 +1,8 @@
+import { useContext, useEffect, useState } from 'react';
+import { AxiosError, AxiosResponse } from 'axios';
+import { useQuery } from 'react-query';
+import { useNavigate, useParams } from 'react-router-dom';
+import moment from 'moment';
 import {
   Box,
   Button,
@@ -11,85 +16,74 @@ import {
   Paper,
   Typography
 } from '@mui/material';
-import * as React from 'react';
-import { useContext, useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
-import { api } from '../../../util/api';
-import { CommentType, PostType } from '../../../util/types';
-import { useNavigate, useParams } from 'react-router-dom';
-import UserAvatar from '../../../components/UserAvatar';
-import moment from 'moment';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import Comments from '../../../components/Comments';
+import { ArrowBackIosNew } from '@mui/icons-material';
 import { GlobalContext } from '../../../components/GlobalContext';
+import { CommentType, PostType } from '../../../util/types';
+import { api } from '../../../util/api';
+import UserAvatar from '../../../components/UserAvatar';
+import Comments from '../../../components/Comments';
+import ErrorSnackbar from '../../../components/ErrorSnackbar';
 
 export default function Post() {
   const id = useParams().id as unknown as number;
   const { user, isLoading } = useContext(GlobalContext);
   const navigate = useNavigate();
 
-  const fetchQueryOptions = {
-    refetchInterval: 5000,
-    refetchIntervalInBackground: true,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false
-  };
-
   const [post, setPost] = useState<PostType>();
-  const { isLoading: isPostLoading, refetch: fetchPost } = useQuery(
-    ['fetchPost', id],
-    async ({ queryKey }) => {
-      const [, postId] = queryKey;
-      await api.get(`/posts/${postId}`).then((response) => {
-        setPost(response.data as PostType);
-      });
-    },
-    fetchQueryOptions
-  );
+  const {
+    data: postData,
+    isSuccess: isPostSuccess,
+    isLoading: isPostLoading,
+    isError: isPostError
+  } = useQuery<AxiosResponse<PostType>, AxiosError>(['fetchPost', id], ({ queryKey }) => {
+    const [, id] = queryKey;
+    return api.get(`/posts/${id}`);
+  });
+  useEffect(() => {
+    if (isPostSuccess && postData) {
+      setPost(postData.data);
+    }
+  }, [isPostSuccess, postData, postData?.data]);
 
   const [comments, setComments] = useState<CommentType[]>();
-  const { isLoading: isCommentsLoading, refetch: fetchComments } = useQuery(
-    ['fetchComments', id],
-    async ({ queryKey }) => {
-      const [, postId] = queryKey;
-      await api
-        .get('/comments', {
-          params: {
-            postId: postId
-          }
-        })
-        .then((response) => {
-          setComments(response.data as CommentType[]);
-        });
-    },
-    fetchQueryOptions
-  );
-
+  const {
+    data: commentsData,
+    isSuccess: isCommentsSuccess,
+    isLoading: isCommentsLoading,
+    isError: isCommentsError
+  } = useQuery<AxiosResponse<CommentType[]>, AxiosError>(['fetchComments', id], ({ queryKey }) => {
+    const [, id] = queryKey;
+    return api.get('/comments', {
+      params: {
+        postId: id
+      }
+    });
+  });
   useEffect(() => {
-    fetchPost();
-    fetchComments();
-  }, [fetchComments, fetchPost]);
+    if (isCommentsSuccess && commentsData) {
+      setComments(commentsData.data);
+    }
+  }, [isCommentsSuccess, commentsData, commentsData?.data]);
 
   return isLoading || isPostLoading || isCommentsLoading || !post || !comments ? (
-    <Box sx={{ p: 4 }} display={'flex'} justifyContent={'center'}>
+    <Box sx={{ p: 4 }} display='flex' justifyContent='center'>
       <CircularProgress size={24} color='primary' />
     </Box>
   ) : (
-    <Container maxWidth={'lg'} sx={{ mb: 4 }}>
+    <Container maxWidth='lg' sx={{ mb: 4 }}>
       {user && (
         <Button onClick={() => navigate('/feed')} sx={{ height: '4rem' }}>
-          <ArrowBackIosNewIcon fontSize={'small'} />
-          <Typography variant={'body2'} color='text.primary'>
+          <ArrowBackIosNew fontSize='small' />
+          <Typography variant='body2' color='text.primary'>
             Back to feed
           </Typography>
         </Button>
       )}
       <Grid container sx={!user ? { mt: 4 } : {}}>
         <Grid item xs={12}>
-          <Card variant={'outlined'}>
+          <Card variant='outlined'>
             <CardHeader
-              avatar={<UserAvatar user={post.user} alt={'Post User Image'} />}
+              avatar={<UserAvatar user={post.user} alt='Post User Image' />}
               title={post.user?.firstName.concat(' ', post.user?.lastName)}
               subheader={moment(post.createdAt).fromNow()}
               sx={{
@@ -116,17 +110,19 @@ export default function Post() {
           </Card>
         </Grid>
         <Grid item xs={12}>
-          <Paper variant={'outlined'} sx={{ borderTop: 0 }}>
+          <Paper variant='outlined' sx={{ borderTop: 0 }}>
             {comments.length > 0 ? (
               <Comments comments={comments} />
             ) : (
-              <Typography variant={'body2'} sx={{ p: 3 }}>
+              <Typography variant='body2' sx={{ p: 2 }}>
                 No comments yet.
               </Typography>
             )}
           </Paper>
         </Grid>
       </Grid>
+      <ErrorSnackbar open={isPostError} message='Could not load post. Please try again.' />
+      <ErrorSnackbar open={isCommentsError} message='Could not load comments. Please try again.' />
     </Container>
   );
 }

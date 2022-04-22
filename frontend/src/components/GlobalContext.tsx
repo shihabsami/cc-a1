@@ -1,8 +1,8 @@
-import React, { createContext, FunctionComponent, useCallback, useEffect, useState } from 'react';
+import { createContext, useCallback, useEffect, useState } from 'react';
+import { AxiosError, AxiosResponse } from 'axios';
 import { useQuery, useQueryClient } from 'react-query';
 import { SignInResponseType, UserType } from '../util/types';
 import { api } from '../util/api';
-import { AxiosError, AxiosResponse } from 'axios';
 
 interface GlobalContextType {
   user?: UserType;
@@ -17,7 +17,7 @@ interface GlobalContextType {
 
 export const GlobalContext = createContext<GlobalContextType>({} as never);
 
-export const GlobalContextProvider: FunctionComponent<unknown> = ({ children }) => {
+export default function GlobalContextProvider({ children }: { children: React.ReactNode }) {
   const client = useQueryClient();
   const [token, setToken] = useState<string>();
 
@@ -74,4 +74,4 @@ export const GlobalContextProvider: FunctionComponent<unknown> = ({ children }) 
       {children}
     </GlobalContext.Provider>
   );
-};
+}

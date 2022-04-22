@@ -1,5 +1,4 @@
 import { Container, Typography } from '@mui/material';
-import React from 'react';
 
 export default function Home() {
   return (
@@ -12,7 +11,7 @@ export default function Home() {
         justifyContent: 'space-between'
       }}
     >
-      <Container sx={{ marginTop: '4rem', flexGrow: 1 }}>
+      <Container sx={{ mt: '4rem', flexGrow: 1 }}>
         <Typography variant='h3'>Welcome!</Typography>
         <Typography sx={{ marginY: '1.5rem' }}>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sapien enim, lobortis ac justo vel,
@@ -20,7 +19,7 @@ export default function Home() {
           nulla.
         </Typography>
       </Container>
-      <img src={'/flat-mountains.svg'} alt={'Flat Mountains'} />
+      <img src='/flat-mountains.svg' alt='Flat Mountains' />
     </Container>
   );
 }

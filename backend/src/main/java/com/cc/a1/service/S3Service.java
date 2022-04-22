@@ -51,6 +51,7 @@ public class S3Service {
                     new PutObjectRequest(bucketName, newFileName, multipartFile.getInputStream(), metadata)
                             .withCannedAcl(CannedAccessControlList.PublicRead)).waitForUploadResult();
         } catch (AmazonServiceException | IOException | InterruptedException exception) {
+
             throw new InvalidImageException("Could not upload image.");
         }
 

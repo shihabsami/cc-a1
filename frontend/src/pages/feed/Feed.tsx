@@ -1,3 +1,6 @@
+import { useContext, useEffect, useState } from 'react';
+import { useMutation, useQuery } from 'react-query';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -8,26 +11,19 @@ import {
   DialogTitle,
   Divider,
   IconButton,
+  Link,
   Paper,
   TextField,
   Typography
 } from '@mui/material';
-import * as React from 'react';
-import { useContext, useEffect, useState } from 'react';
-import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
-import CloseIcon from '@mui/icons-material/Close';
-import { useMutation, useQuery } from 'react-query';
-import { api } from '../../util/api';
-import RateReviewIcon from '@mui/icons-material/RateReview';
-import LoadingButton from '../../components/LoadingButton';
-import { FetchPostsType, PostType } from '../../util/types';
+import { AddPhotoAlternate, Cancel, Close, RateReview } from '@mui/icons-material';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import Link from '@mui/material/Link';
-import FeedPost from '../../components/FeedPost';
 import { GlobalContext } from '../../components/GlobalContext';
-import CancelIcon from '@mui/icons-material/Cancel';
-import { useNavigate } from 'react-router-dom';
+import { FetchPostsType, PostType } from '../../util/types';
+import { api } from '../../util/api';
 import { acceptedImageTypes } from '../../util/constants';
+import LoadingButton from '../../components/LoadingButton';
+import FeedPost from '../../components/FeedPost';
 
 type FeedState = {
   posts: PostType[];
@@ -161,7 +157,7 @@ export default function Feed() {
 
   useEffect(() => {
     if (!isLoading && !isSignedIn()) {
-      return navigate('/signIn');
+      return navigate('/sign-in');
     }
   }, [isLoading, isSignedIn, navigate]);
 
@@ -176,21 +172,21 @@ export default function Feed() {
               fullWidth
               sx={{ height: '100%', textAlign: 'left' }}
             >
-              <Typography color='text.primary' variant='body1' textTransform={'none'}>
+              <Typography color='text.primary' variant='body1' textTransform='none'>
                 {user?.firstName}, what&apos;s on your mind?
               </Typography>
             </Button>
           </Box>
           <Box sx={{ pl: 2 }}>
             <Button onClick={handlePostFormOpen} variant='contained' fullWidth sx={{ height: '100%' }}>
-              <RateReviewIcon />
+              <RateReview />
             </Button>
           </Box>
         </Box>
         <Divider sx={{ pt: 4 }} />
 
         {isFeedLoading ? (
-          <Box sx={{ p: 4 }} display={'flex'} justifyContent={'center'}>
+          <Box sx={{ p: 4 }} display='flex' justifyContent='center'>
             <CircularProgress size={24} color='primary' />
           </Box>
         ) : (
@@ -200,18 +196,18 @@ export default function Feed() {
             endMessage={
               <Box
                 sx={{ py: 4 }}
-                display={'flex'}
-                flexDirection={'column'}
-                alignItems={'center'}
-                justifyContent={'center'}
+                display='flex'
+                flexDirection='column'
+                alignItems='center'
+                justifyContent='center'
               >
                 {feedState.posts.length > 0 ? (
                   <>
-                    <Typography variant={'body1'}>That&apos; s all for now.</Typography>
+                    <Typography variant='body1'>That&apos; s all for now.</Typography>
                     <Link
                       sx={{ p: 0, m: 0 }}
-                      component={'button'}
-                      variant={'body1'}
+                      component='button'
+                      variant='body1'
                       onClick={() => {
                         document.body.scrollIntoView({ behavior: 'smooth' });
                       }}
@@ -220,12 +216,12 @@ export default function Feed() {
                     </Link>
                   </>
                 ) : (
-                  <Typography variant={'body1'}>No posts yet. Now&apos;s your chance to create history.</Typography>
+                  <Typography variant='body1'>No posts yet. Now&apos;s your chance to create history.</Typography>
                 )}
               </Box>
             }
             loader={
-              <Box sx={{ p: 4 }} display={'flex'} justifyContent={'center'}>
+              <Box sx={{ p: 4 }} display='flex' justifyContent='center'>
                 <CircularProgress size={24} color='primary' />
               </Box>
             }
@@ -244,7 +240,7 @@ export default function Feed() {
         open={postState.formOpen}
       >
         <DialogTitle>
-          <Typography variant={'body1'}>Create New Post</Typography>
+          <Typography variant='body1'>Create New Post</Typography>
           <IconButton
             aria-label='close'
             onClick={handlePostFormClose}
@@ -255,11 +251,11 @@ export default function Feed() {
               top: 8
             }}
           >
-            <CloseIcon />
+            <Close />
           </IconButton>
         </DialogTitle>
         <DialogContent dividers>
-          <Box width={'500px'} component='form' noValidate sx={{ mt: 1 }} onSubmit={handleSubmit}>
+          <Box width='500px' component='form' noValidate sx={{ mt: 1 }} onSubmit={handleSubmit}>
             <TextField
               rows={postState.image ? undefined : 8}
               fullWidth
@@ -271,7 +267,7 @@ export default function Feed() {
                   formOpen: postState.formOpen
                 })
               }
-              variant={'outlined'}
+              variant='outlined'
               sx={{
                 '.MuiOutlinedInput-root': {
                   paddingX: '1.0rem',
@@ -285,8 +281,8 @@ export default function Feed() {
                     <Paper
                       variant='elevation'
                       elevation={3}
-                      width={'470px'}
-                      component={'img'}
+                      width='470px'
+                      component='img'
                       sx={{ position: 'relative' }}
                       src={URL.createObjectURL(postState.image)}
                     />
@@ -300,27 +296,27 @@ export default function Feed() {
                         });
                       }}
                     >
-                      <CancelIcon />
+                      <Cancel />
                     </IconButton>
                   </Box>
                 )
               }}
               disabled={isPostLoading}
             />
-            <Box sx={{ mt: 3 }} display={'flex'} alignItems={'center'} justifyContent={'center'}>
+            <Box sx={{ mt: 3 }} display='flex' alignItems='center' justifyContent='center'>
               <Box>
-                <label htmlFor='upload-photo'>
+                <label htmlFor='upload-image'>
                   <input
                     disabled={isPostLoading}
                     style={{ display: 'none' }}
-                    id='upload-photo'
-                    name='upload-photo'
+                    id='upload-image'
+                    name='upload-image'
                     type='file'
                     accept={acceptedImageTypes.join(',')}
                     onChange={onImageChange}
                   />
                   <Button sx={{ height: '100%' }} disabled={isPostLoading} component='span' variant='contained'>
-                    <AddPhotoAlternateIcon />
+                    <AddPhotoAlternate />
                   </Button>
                 </label>
               </Box>
