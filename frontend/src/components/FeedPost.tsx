@@ -53,8 +53,9 @@ interface FeedPostProps extends CardProps {
 export default function FeedPost({ post, ...rest }: FeedPostProps) {
   const { user } = useContext(GlobalContext);
   const client = useQueryClient();
-
   const userFullName = post.user.firstName.concat(' ', post.user.lastName);
+  const cloudfrontUrl = process.env.REACT_APP_CLOUDFRONT_URL;
+
   const [likes, setLikes] = useState<LikeType[]>();
   const [liked, setLiked] = useState<boolean>();
   const { isLoading: isLikeLoading, mutate: mutateLike } = useMutation(async () => {
@@ -154,7 +155,7 @@ export default function FeedPost({ post, ...rest }: FeedPostProps) {
 
   return (
     <>
-      <Card {...rest} variant='outlined' sx={{ mt: '2rem' }}>
+      <Card {...rest} variant='outlined' sx={{ mt: '2rem', borderColor: '#d0c3e8' }}>
         <CardHeader
           avatar={<UserAvatar user={post.user} alt='Post User Image' />}
           title={userFullName}
@@ -179,36 +180,49 @@ export default function FeedPost({ post, ...rest }: FeedPostProps) {
               sx={{
                 backgroundColor: '#ffffff'
               }}
-              image={post.image.url}
+              image={`${cloudfrontUrl}/${post.image.url}`}
               alt='Post Image'
             />
           </Link>
         )}
         <CardActions disableSpacing sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
-          {isLikeLoading || isLikesLoading ? (
+          {isLikesLoading || isLikeLoading ? (
             <Button fullWidth disabled>
-              {liked ? <ThumbUpAlt sx={{ pr: 1 }} color='primary' /> : <ThumbUpOffAlt sx={{ pr: 1 }} />}
-              <CircularProgress size='1rem' color='primary' />
+              {liked ? <ThumbUpAlt fontSize='medium' color='primary' /> : <ThumbUpOffAlt fontSize='medium' />}
+              <Box display='flex' justifyContent='center' alignItems='center' pl={0.5}>
+                <CircularProgress size='1rem' color='primary' />
+              </Box>
             </Button>
           ) : (
-            <Button fullWidth onClick={() => mutateLike()}>
-              {liked ? <ThumbUpAlt color='primary' /> : <ThumbUpOffAlt />}
-              <Typography sx={{ width: '1rem', pl: 1 }}>{likes?.length}</Typography>
+            <Button
+              fullWidth
+              onClick={() => {
+                mutateLike();
+              }}
+            >
+              {liked ? <ThumbUpAlt fontSize='medium' color='primary' /> : <ThumbUpOffAlt fontSize='medium' />}
+              <Box display='flex' justifyContent='center' alignItems='center' pl={0.5}>
+                <Typography sx={{ width: '1rem' }}>{likes?.length}</Typography>
+              </Box>
             </Button>
           )}
           {isCommentsLoading ? (
             <Button fullWidth disabled>
-              <InsertComment sx={{ pr: 1 }} />
-              <CircularProgress size='1rem' color='primary' />
+              <InsertComment fontSize='medium' />
+              <Box display='flex' justifyContent='center' alignItems='center' pl={0.5}>
+                <CircularProgress size='1rem' color='primary' />
+              </Box>{' '}
             </Button>
           ) : (
             <Button fullWidth onClick={() => setCommentsOpen((prevState) => !prevState)}>
-              {commentsOpen ? <ExpandLessTwoTone /> : <InsertComment />}
-              <Typography sx={{ width: '1rem', pl: 1 }}>{comments?.length}</Typography>
+              {commentsOpen ? <ExpandLessTwoTone fontSize='medium' /> : <InsertComment fontSize='medium' />}
+              <Box display='flex' justifyContent='center' alignItems='center' pl={0.5}>
+                <Typography sx={{ width: '1rem' }}>{comments?.length}</Typography>
+              </Box>
             </Button>
           )}
           <Button fullWidth onClick={handleShareClick}>
-            <Share />
+            <Share fontSize='medium' />
           </Button>
           <Menu anchorEl={anchorEl} open={shareOpen} onClose={handleShareClose} disableScrollLock>
             <MenuItem onClick={handleShareClose}>

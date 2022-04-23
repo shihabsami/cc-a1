@@ -28,6 +28,7 @@ export default function Post() {
   const id = useParams().id as unknown as number;
   const { user, isLoading } = useContext(GlobalContext);
   const navigate = useNavigate();
+  const cloudfrontUrl = process.env.REACT_APP_CLOUDFRONT_URL;
 
   const [post, setPost] = useState<PostType>();
   const {
@@ -103,7 +104,7 @@ export default function Post() {
                 sx={{
                   backgroundColor: '#ffffff'
                 }}
-                image={post.image.url}
+                image={`${cloudfrontUrl}/${post.image.url}`}
                 alt='Post Image'
               />
             )}

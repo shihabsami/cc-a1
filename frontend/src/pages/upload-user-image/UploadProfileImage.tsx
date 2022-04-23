@@ -5,7 +5,7 @@ import { Button, Container, Grid, Typography } from '@mui/material';
 import { AddPhotoAlternateRounded } from '@mui/icons-material';
 import { GlobalContext } from '../../components/GlobalContext';
 import { api } from '../../util/api';
-import { acceptedImageTypes } from '../../util/constants';
+import { ACCEPTED_IMAGE_TYPES } from '../../util/constants';
 import LoadingButton from '../../components/LoadingButton';
 import ProfileImage from '../../components/ProfileImage';
 import ErrorSnackbar from '../../components/ErrorSnackbar';
@@ -17,7 +17,7 @@ export default function UploadProfileImage() {
   const [image, setImage] = useState<File>();
   const onImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.item(0);
-    if (file && acceptedImageTypes.includes(file.type)) {
+    if (file && ACCEPTED_IMAGE_TYPES.includes(file.type)) {
       setImage(file);
     } else {
       !image && setImage(undefined);
@@ -68,7 +68,7 @@ export default function UploadProfileImage() {
               id='upload-photo'
               name='upload-photo'
               type='file'
-              accept={acceptedImageTypes.join(',')}
+              accept={ACCEPTED_IMAGE_TYPES.join(',')}
               onChange={onImageChange}
             />
             <Button

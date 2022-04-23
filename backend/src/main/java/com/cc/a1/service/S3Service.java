@@ -55,7 +55,7 @@ public class S3Service {
             throw new InvalidImageException("Could not upload image.");
         }
 
-        return s3Client.getUrl(bucketName, newFileName).toExternalForm();
+        return newFileName;
     }
 
     private String getCleanFileName(String fileName) {

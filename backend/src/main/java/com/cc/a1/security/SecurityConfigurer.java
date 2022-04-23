@@ -89,20 +89,17 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
                         "/**/*.html",
                         "/**/*.css",
                         "/**/*.js").permitAll()
-                // TODO Development.
-                .anyRequest().permitAll();
-                // TODO Production.
-//                .antMatchers("/health").permitAll()
-//                .antMatchers("/api/users/register").permitAll()
-//                .antMatchers("/api/users/authenticate").permitAll()
-//                .antMatchers("/api/posts").authenticated()
-//                .antMatchers("/api/posts/**").authenticated()
-//                .antMatchers("/api/images/**").authenticated()
-//                .antMatchers("/api/likes").permitAll()
-//                .antMatchers("/api/likes/**").authenticated()
-//                .antMatchers("/api/comments").permitAll()
-//                .antMatchers("/api/comments/**").authenticated()
-//                .anyRequest().authenticated();
+                .antMatchers("/health").permitAll()
+                .antMatchers("/api/users/register").permitAll()
+                .antMatchers("/api/users/authenticate").permitAll()
+                .antMatchers("/api/posts").authenticated()
+                .antMatchers("/api/posts/**").authenticated()
+                .antMatchers("/api/images/**").authenticated()
+                .antMatchers("/api/likes").permitAll()
+                .antMatchers("/api/likes/**").authenticated()
+                .antMatchers("/api/comments").permitAll()
+                .antMatchers("/api/comments/**").authenticated()
+                .anyRequest().authenticated();
 
         // Configure the JWT authentication filter to run before processing every HTTP request.
         security.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

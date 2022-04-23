@@ -25,12 +25,12 @@ export default function NavBar() {
   }));
 
   return (
-    <AppBar position='sticky' sx={{ height: '4rem' }}>
+    <AppBar position='sticky' sx={{ height: '4rem', boxShadow: 2 }}>
       <Toolbar>
         <Container maxWidth='lg'>
           <Grid container alignItems='center' justifyContent='space-between'>
             <Grid item>
-              <Link href='/'>
+              <Link href='/' display='flex' alignItems='center'>
                 <img src={Logo} alt='CC Logo' height='44rem' />
               </Link>
             </Grid>

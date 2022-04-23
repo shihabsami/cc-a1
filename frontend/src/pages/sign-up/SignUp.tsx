@@ -43,10 +43,10 @@ export default function SignUp() {
   }, [context, data, isSuccess, navigate]);
 
   return (
-    <Container maxWidth='xs'>
+    <Container maxWidth='sm'>
       <Box
         sx={{
-          marginTop: 8,
+          marginTop: 4,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center'
@@ -56,11 +56,11 @@ export default function SignUp() {
           <LockOutlined />
         </Avatar>
         <Typography component='h1' variant='h5'>
-          Register
+          Sign Up
         </Typography>
-        <Box component='form' noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+        <Box component='form' noValidate onSubmit={handleSubmit} sx={{ mt: 4 }}>
           <Grid container>
-            <Grid item xs={6} sx={{ pr: 1 }}>
+            <Grid item xs={6} sx={{ pr: 1.5 }}>
               <FormField
                 name='firstName'
                 label='First Name'
@@ -72,7 +72,7 @@ export default function SignUp() {
                 required
               />
             </Grid>
-            <Grid item xs={6} sx={{ pl: 1 }}>
+            <Grid item xs={6} sx={{ pl: 1.5 }}>
               <FormField
                 name='lastName'
                 label='Last Name'
@@ -122,7 +122,7 @@ export default function SignUp() {
               />
             </Grid>
           </Grid>
-          <Button type='submit' fullWidth variant='contained' sx={{ mt: 3, mb: 2 }}>
+          <Button type='submit' fullWidth variant='contained' sx={{ mt: 1, mb: 2 }}>
             Sign Up
           </Button>
           <Grid container justifyContent='flex-end'>

@@ -39,7 +39,7 @@ export default function SignIn() {
     <Container maxWidth='xs'>
       <Box
         sx={{
-          marginTop: 8,
+          marginTop: 4,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center'
@@ -51,7 +51,7 @@ export default function SignIn() {
         <Typography component='h1' variant='h5'>
           Sign in
         </Typography>
-        <Box component='form' onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <Box component='form' onSubmit={handleSubmit} noValidate sx={{ mt: 4 }}>
           <Grid container spacing={1}>
             <Grid item xs={12}>
               <FormField
@@ -78,7 +78,7 @@ export default function SignIn() {
               />
             </Grid>
           </Grid>
-          <Button type='submit' fullWidth variant='contained' sx={{ mt: 3, mb: 2 }}>
+          <Button type='submit' fullWidth variant='contained' sx={{ mt: 1, mb: 2 }}>
             Sign In
           </Button>
           <Grid container justifyContent='flex-end'>
