@@ -9,7 +9,7 @@ import {
   TextField,
   Typography
 } from '@mui/material';
-import { ClearRounded, RateReviewRounded, CloseRounded, AddPhotoAlternateRounded } from '@mui/icons-material';
+import { RateReviewRounded, CloseRounded, AddPhotoAlternateRounded, DeleteRounded } from '@mui/icons-material';
 import { useEffect, useRef, useState } from 'react';
 import { useMutation } from 'react-query';
 import { api } from '../util/api';
@@ -123,10 +123,11 @@ export default function AddPost({ user, onSuccess }: { user?: UserType; onSucces
         </DialogTitle>
         <DialogContent dividers>
           <Box width='500px' component='form' noValidate sx={{ mt: 1 }} onSubmit={handleSubmit}>
-            <Paper variant='outlined' sx={{ p: 2, pb: 1.5, pt: 0, minHeight: '300px' }}>
+            <Paper variant='outlined' sx={{ p: 2, pb: 1.5, pt: 0, minHeight: '250px' }}>
               <TextField
                 margin='normal'
                 fullWidth
+                rows={image ? undefined : 8}
                 multiline
                 inputRef={textFieldRef}
                 variant='standard'
@@ -154,8 +155,12 @@ export default function AddPost({ user, onSuccess }: { user?: UserType; onSucces
                     alt='Post Image.'
                     src={URL.createObjectURL(image)}
                   />
-                  <IconButton sx={{ position: 'absolute', right: 0, top: '1rem' }} onClick={() => setImage(undefined)}>
-                    <ClearRounded />
+                  <IconButton
+                    disabled={isPostLoading}
+                    sx={{ position: 'absolute', right: 0, top: '1rem' }}
+                    onClick={() => setImage(undefined)}
+                  >
+                    <DeleteRounded />
                   </IconButton>
                 </Box>
               )}

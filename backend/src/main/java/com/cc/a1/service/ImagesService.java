@@ -31,7 +31,7 @@ public class ImagesService {
         if (post.getImage() != null)
             throw new InvalidImageException(String.format("Post with id %d already has an image.", postId));
 
-        String imageUrl = s3Service.uploadFile(imageFile);
+        String imageUrl = s3Service.uploadFile(imageFile, "post");
         Image image = new Image();
         image.setUrl(imageUrl);
         image.setPost(post);
@@ -39,17 +39,22 @@ public class ImagesService {
         return imagesRepository.save(image);
     }
 
-    public Image saveProfileImage(MultipartFile imageFile, String username) {
+    public Image saveUserImage(MultipartFile imageFile, String username) {
         User user = usersService.getUserByUsername(username);
         if (user.getImage() != null)
             throw new InvalidImageException(String.format("User with username %s already has an image.", username));
 
-        String imageUrl = s3Service.uploadFile(imageFile);
+        String imageUrl = s3Service.uploadFile(imageFile, "user");
         Image image = new Image();
         image.setUrl(imageUrl);
         image.setUser(user);
 
         return imagesRepository.save(image);
+    }
+
+    public Image getUserImage(Long id) {
+        return imagesRepository.findByUser_Id(id).orElseThrow(
+                () -> new InvalidImageException(String.format("User with id %d do not have an image.", id)));
     }
 
 }

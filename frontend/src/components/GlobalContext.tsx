@@ -1,12 +1,13 @@
 import { createContext, useCallback, useEffect, useState } from 'react';
 import { AxiosError, AxiosResponse } from 'axios';
-import { useQuery, useQueryClient } from 'react-query';
+import { useQuery } from 'react-query';
 import { SignInResponseType, UserType } from '../util/types';
 import { api } from '../util/api';
 
 interface GlobalContextType {
   user?: UserType;
-  isLoading: boolean;
+
+  isContextLoading: boolean;
 
   isSignedIn(): boolean;
 
@@ -18,12 +19,12 @@ interface GlobalContextType {
 export const GlobalContext = createContext<GlobalContextType>({} as never);
 
 export default function GlobalContextProvider({ children }: { children: React.ReactNode }) {
-  const client = useQueryClient();
   const [token, setToken] = useState<string>();
 
   const { data, refetch, remove, isLoading, isFetching, isError } = useQuery<AxiosResponse<UserType>, AxiosError>(
     'fetchUser',
-    () => api.get('/users/getAuthenticated')
+    () => api.get('/users/getAuthenticated'),
+    { enabled: false }
   );
 
   // On token change, update the header and refetch user.
@@ -45,13 +46,13 @@ export default function GlobalContextProvider({ children }: { children: React.Re
   const signOut = useCallback(() => {
     localStorage.removeItem('token');
     setToken(undefined);
-    client.invalidateQueries('fetchUser');
-  }, [client]);
+    remove();
+  }, [remove]);
 
   const signIn = (signInResponse: SignInResponseType) => {
     localStorage.setItem('token', signInResponse.jwt);
     setToken(signInResponse.jwt);
-    client.invalidateQueries('fetchUser');
+    refetch();
   };
 
   // Clear token if error.
@@ -66,7 +67,7 @@ export default function GlobalContextProvider({ children }: { children: React.Re
       value={{
         user: data?.data as UserType,
         isSignedIn: () => !!localStorage.getItem('token'),
-        isLoading: token ? isLoading || isFetching : false,
+        isContextLoading: token ? isLoading || isFetching : false,
         signIn,
         signOut
       }}

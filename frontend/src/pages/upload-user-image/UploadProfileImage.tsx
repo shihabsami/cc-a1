@@ -11,7 +11,7 @@ import ProfileImage from '../../components/ProfileImage';
 import ErrorSnackbar from '../../components/ErrorSnackbar';
 
 export default function UploadProfileImage() {
-  const { user, isLoading, isSignedIn } = useContext(GlobalContext);
+  const { user, isContextLoading: isLoading, isSignedIn } = useContext(GlobalContext);
   const navigate = useNavigate();
 
   const [image, setImage] = useState<File>();

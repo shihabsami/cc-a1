@@ -5,6 +5,16 @@ import { GlobalContext } from './GlobalContext';
 import UserAvatar from './UserAvatar';
 import Logo from '../logo.svg';
 
+const StyledBadge = styled(Badge)(({ theme }) => ({
+  '& .MuiBadge-badge': {
+    backgroundColor: '#44b700',
+    color: '#44b700',
+    borderRadius: '50%',
+    width: '4px',
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`
+  }
+}));
+
 export default function NavBar() {
   const { user, signOut } = useContext(GlobalContext);
   const navigate = useNavigate();
@@ -13,17 +23,6 @@ export default function NavBar() {
     signOut();
     navigate('/');
   };
-
-  const StyledBadge = styled(Badge)(({ theme }) => ({
-    '& .MuiBadge-badge': {
-      backgroundColor: '#44b700',
-      color: '#44b700',
-      borderRadius: '50%',
-      width: '4px',
-      boxShadow: `0 0 0 2px ${theme.palette.background.paper}`
-    }
-  }));
-
   return (
     <AppBar position='sticky' sx={{ height: '4rem', boxShadow: 2 }}>
       <Toolbar>

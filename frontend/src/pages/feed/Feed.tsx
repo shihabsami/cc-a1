@@ -1,13 +1,14 @@
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useNavigate } from 'react-router-dom';
-import { Box, CircularProgress, Container, Divider, Link, Typography } from '@mui/material';
+import { Box, Container, Divider, Link, Typography } from '@mui/material';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { GlobalContext } from '../../components/GlobalContext';
 import { FetchPostsType } from '../../util/types';
 import { api } from '../../util/api';
 import FeedPost from '../../components/FeedPost';
 import AddPost from '../../components/AddPost';
+import CenteredCircularProgress from '../../components/CenteredCircularProgress';
 
 const initialFeedState: FetchPostsType = {
   posts: [],
@@ -16,7 +17,7 @@ const initialFeedState: FetchPostsType = {
 };
 
 export default function Feed() {
-  const { user, isLoading, isSignedIn } = useContext(GlobalContext);
+  const { user, isContextLoading: isLoading, isSignedIn } = useContext(GlobalContext);
   const navigate = useNavigate();
   useEffect(() => {
     if (!isLoading && !isSignedIn()) {
@@ -50,6 +51,9 @@ export default function Feed() {
       fetchMorePosts();
     }
   }, [feedState.page, fetchMorePosts]);
+  const onPostSuccess = useCallback(() => {
+    setFeedState(initialFeedState);
+  }, []);
 
   return (
     <Container
@@ -62,17 +66,10 @@ export default function Feed() {
     >
       {user ? (
         <>
-          <AddPost
-            user={user}
-            onSuccess={() => {
-              setFeedState(initialFeedState);
-            }}
-          />
+          <AddPost user={user} onSuccess={onPostSuccess} />
           <Divider sx={{ pt: 4 }} />
           {isFeedLoading ? (
-            <Box sx={{ p: 4 }} display='flex' justifyContent='center'>
-              <CircularProgress size={24} color='primary' />
-            </Box>
+            <CenteredCircularProgress />
           ) : (
             <InfiniteScroll
               next={fetchMorePosts}
@@ -98,11 +95,7 @@ export default function Feed() {
                   )}
                 </Box>
               }
-              loader={
-                <Box sx={{ p: 4 }} display='flex' justifyContent='center'>
-                  <CircularProgress size={24} color='primary' />
-                </Box>
-              }
+              loader={<CenteredCircularProgress />}
               dataLength={feedState.posts.length}
             >
               {feedState.posts.map((p) => (
@@ -112,9 +105,7 @@ export default function Feed() {
           )}
         </>
       ) : (
-        <Box sx={{ p: 4 }} display='flex' justifyContent='center'>
-          <CircularProgress size={24} color='primary' />
-        </Box>
+        <CenteredCircularProgress />
       )}
     </Container>
   );

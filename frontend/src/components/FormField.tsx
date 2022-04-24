@@ -12,11 +12,9 @@ function FormField({ onChange, name, errors, ...rest }: FormFieldProps) {
       helperText={errors?.[name] || ' '}
       fullWidth
       variant='outlined'
-      margin='none'
+      margin='dense'
       onChange={(event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-        // Clear error on change.
-        if (errors != undefined) errors.name = '';
-
+        if (errors != undefined) errors[name] = '';
         onChange && onChange(event.target.value);
       }}
     />

@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Service
 public class S3Service {
@@ -29,7 +30,7 @@ public class S3Service {
         this.s3Client = s3Client;
     }
 
-    public String uploadFile(MultipartFile multipartFile) {
+    public String uploadFile(MultipartFile multipartFile, String imageFor) {
         // Validate file is not empty.
         if (multipartFile.isEmpty())
             throw new InvalidImageException("File is empty.");
@@ -43,6 +44,7 @@ public class S3Service {
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(multipartFile.getSize());
         metadata.setContentType(multipartFile.getContentType());
+        metadata.setUserMetadata(Map.of("image-for", imageFor));
         String newFileName = getCleanFileName(LocalDateTime.now() + "_" + originalFileName);
 
         TransferManager transferManager = TransferManagerBuilder.standard().withS3Client(s3Client).build();

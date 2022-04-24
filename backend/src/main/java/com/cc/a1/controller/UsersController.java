@@ -103,4 +103,12 @@ public class UsersController {
         return new ResponseEntity<>(usersService.getUserById(id), HttpStatus.OK);
     }
 
+    /**
+     * Get a user by id.
+     */
+    @GetMapping("/profile/{id}")
+    public ResponseEntity<?> getProfileById(@PathVariable long id) throws UserNotFoundException {
+        return new ResponseEntity<>(usersService.getUserProfileById(id), HttpStatus.OK);
+    }
+
 }

@@ -48,6 +48,11 @@ public class LambdaRequestHandler implements RequestHandler<S3Event, String> {
             throw new RuntimeException();
         }
 
+        if (s3Object.getObjectMetadata().getUserMetaDataOf("image-for").equals("post")) {
+            logger.log("INFO Skipping as metadata 'image-for' set to 'post'");
+            return "OK";
+        }
+
         InputStream objectContent = s3Object.getObjectContent();
         BufferedImage image;
         try {
@@ -79,8 +84,7 @@ public class LambdaRequestHandler implements RequestHandler<S3Event, String> {
         metadata.setContentLength(outputStream.size());
         metadata.setContentType("image/jpeg");
 
-        String destinationObjectKey = Files.getNameWithoutExtension(sourceObjectKey) +
-                                      "_" + THUMBNAIL_WIDTH + "x" + THUMBNAIL_HEIGHT + ".jpeg";
+        String destinationObjectKey = Files.getNameWithoutExtension(sourceObjectKey) + "_thumbnail.jpeg";
         logger.log(String.format("INFO Uploading image as %s/%s", DESTINATION_BUCKET, destinationObjectKey));
 
         TransferManager transferManager = TransferManagerBuilder.standard().withS3Client(s3Client).build();

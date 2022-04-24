@@ -5,7 +5,14 @@ export type UserType = {
   lastName: string;
   role: RoleType;
   image?: ImageType;
+  createdAt: Date;
 };
+
+export interface UserProfileType extends UserType {
+  posts: PostType[];
+  likes: LikeType[];
+  comments: CommentType[];
+}
 
 export enum RoleType {
   ROLE_USER = 'ROLE_USER',

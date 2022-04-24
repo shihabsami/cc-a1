@@ -31,7 +31,7 @@ public class LikesService {
         User user = usersService.getUserByUsername(username);
         if (likesRepository.existsByPostAndUser(post, user))
             throw new LikeAlreadyExistsException(
-                    String.format("Like on post by id %d by user with username %s already exists.", postId, username));
+                    String.format("Like on post by id %d by user with email %s already exists.", postId, username));
 
         Like like = new Like();
         like.setPost(post);
@@ -45,7 +45,7 @@ public class LikesService {
         User user = usersService.getUserByUsername(username);
         if (!likesRepository.existsByPostAndUser(post, user))
             throw new LikeAlreadyExistsException(
-                    String.format("Like on post by id %d by user with username %s does not exist.", postId, username));
+                    String.format("Like on post by id %d by user with email %s does not exist.", postId, username));
 
         likesRepository.deleteByPostAndUser(post, user);
     }

@@ -73,7 +73,6 @@ export default function SignIn() {
                 autoComplete='current-password'
                 onChange={setPassword}
                 errors={error?.response?.data}
-                margin='normal'
                 required
               />
             </Grid>

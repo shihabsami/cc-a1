@@ -3,19 +3,7 @@ import { AxiosError, AxiosResponse } from 'axios';
 import { useQuery } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import moment from 'moment';
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardMedia,
-  CircularProgress,
-  Container,
-  Grid,
-  Paper,
-  Typography
-} from '@mui/material';
+import { Button, Card, CardContent, CardHeader, CardMedia, Container, Grid, Paper, Typography } from '@mui/material';
 import { ArrowBackIosNew } from '@mui/icons-material';
 import { GlobalContext } from '../../../components/GlobalContext';
 import { CommentType, PostType } from '../../../util/types';
@@ -23,10 +11,11 @@ import { api } from '../../../util/api';
 import UserAvatar from '../../../components/UserAvatar';
 import Comments from '../../../components/Comments';
 import ErrorSnackbar from '../../../components/ErrorSnackbar';
+import CenteredCircularProgress from '../../../components/CenteredCircularProgress';
 
 export default function Post() {
   const id = useParams().id as unknown as number;
-  const { user, isLoading } = useContext(GlobalContext);
+  const { user, isContextLoading: isLoading } = useContext(GlobalContext);
   const navigate = useNavigate();
   const cloudfrontUrl = process.env.REACT_APP_CLOUDFRONT_URL;
 
@@ -67,9 +56,7 @@ export default function Post() {
   }, [isCommentsSuccess, commentsData, commentsData?.data]);
 
   return isLoading || isPostLoading || isCommentsLoading || !post || !comments ? (
-    <Box sx={{ p: 4 }} display='flex' justifyContent='center'>
-      <CircularProgress size={24} color='primary' />
-    </Box>
+    <CenteredCircularProgress />
   ) : (
     <Container maxWidth='lg' sx={{ mb: 4 }}>
       {user && (
@@ -82,7 +69,7 @@ export default function Post() {
       )}
       <Grid container sx={!user ? { mt: 4 } : {}}>
         <Grid item xs={12}>
-          <Card variant='outlined'>
+          <Card variant='outlined' sx={{ borderColor: '#d0c3e8' }}>
             <CardHeader
               avatar={<UserAvatar user={post.user} alt='Post User Image' />}
               title={post.user?.firstName.concat(' ', post.user?.lastName)}

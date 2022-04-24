@@ -14,6 +14,7 @@ import SignUp from './pages/sign-up/SignUp';
 import UploadUserImage from './pages/upload-user-image/UploadProfileImage';
 import Feed from './pages/feed/Feed';
 import Post from './pages/feed/{id}/Post';
+import Profile from './pages/profile/Profile';
 
 const rootElement = document.getElementById('root') as Element;
 const root = createRoot(rootElement);
@@ -33,6 +34,7 @@ root.render(
               <Route path='/feed' element={<Feed />} />
               <Route path='/upload-user-image' element={<UploadUserImage />} />
               <Route path='/feed/:id' element={<Post />} />
+              <Route path='/profile/:id' element={<Profile />} />
             </Routes>
           </BrowserRouter>
         </GlobalContextProvider>

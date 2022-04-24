@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -58,6 +59,16 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Comment> comments;
+
+    private Date createdAt;
+
+    /**
+     * Saves the timestamp of creation.
+     */
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
+    }
 
     /**
      * Enum to identify the different user roles.

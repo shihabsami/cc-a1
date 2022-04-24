@@ -60,7 +60,7 @@ export default function SignUp() {
         </Typography>
         <Box component='form' noValidate onSubmit={handleSubmit} sx={{ mt: 4 }}>
           <Grid container>
-            <Grid item xs={6} sx={{ pr: 1.5 }}>
+            <Grid item xs={6} sx={{ pr: 2 }}>
               <FormField
                 name='firstName'
                 label='First Name'
@@ -72,7 +72,7 @@ export default function SignUp() {
                 required
               />
             </Grid>
-            <Grid item xs={6} sx={{ pl: 1.5 }}>
+            <Grid item xs={6} sx={{ pl: 2 }}>
               <FormField
                 name='lastName'
                 label='Last Name'
