@@ -88,7 +88,7 @@ export default function Profile() {
                 >
                   <Typography variant='body2'>Likes</Typography>
                   <Typography variant='h6' fontWeight='bold'>
-                    <CountUp duration={1} end={user?.posts.length || 0} />
+                    <CountUp duration={1} end={user?.likes.length || 0} />
                   </Typography>
                 </Paper>
               </Grid>
@@ -106,7 +106,7 @@ export default function Profile() {
                 >
                   <Typography variant='body2'>Comments</Typography>
                   <Typography variant='h6' fontWeight='bold'>
-                    <CountUp duration={1} end={user?.posts.length || 0} />
+                    <CountUp duration={1} end={user?.comments.length || 0} />
                   </Typography>
                 </Paper>
               </Grid>

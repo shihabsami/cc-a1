@@ -36,7 +36,7 @@ export default function SignUp() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    mutate();
+    !passwordsMatchingError && mutate();
   };
 
   useEffect(() => {
