@@ -10,7 +10,7 @@ import { CommentType, PostType } from '../../../util/types';
 import { api } from '../../../util/api';
 import UserAvatar from '../../../components/UserAvatar';
 import Comments from '../../../components/Comments';
-import ErrorSnackbar from '../../../components/ErrorSnackbar';
+import MessageSnackbar from '../../../components/MessageSnackbar';
 import CenteredCircularProgress from '../../../components/CenteredCircularProgress';
 
 export default function Post() {
@@ -109,8 +109,8 @@ export default function Post() {
           </Paper>
         </Grid>
       </Grid>
-      <ErrorSnackbar open={isPostError} message='Could not load post. Please try again.' />
-      <ErrorSnackbar open={isCommentsError} message='Could not load comments. Please try again.' />
+      <MessageSnackbar open={isPostError} message='Could not load post. Please try again.' severity={'error'} />
+      <MessageSnackbar open={isCommentsError} message='Could not load comments. Please try again.' severity={'error'} />
     </Container>
   );
 }

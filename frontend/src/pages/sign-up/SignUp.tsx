@@ -2,13 +2,14 @@ import { useContext, useEffect, useState } from 'react';
 import { AxiosError, AxiosResponse } from 'axios';
 import { useMutation } from 'react-query';
 import { useNavigate } from 'react-router-dom';
-import { Avatar, Box, Button, Container, Grid, Link, Typography } from '@mui/material';
+import { Avatar, Box, Container, Grid, Link, Typography } from '@mui/material';
 import { LockOutlined } from '@mui/icons-material';
 import { GlobalContext } from '../../components/GlobalContext';
 import { RoleType, SignInResponseType } from '../../util/types';
 import { api } from '../../util/api';
 import FormField from '../../components/FormField';
-import ErrorSnackbar from '../../components/ErrorSnackbar';
+import MessageSnackbar from '../../components/MessageSnackbar';
+import LoadingButton from '../../components/LoadingButton';
 
 export default function SignUp() {
   const [username, setUsername] = useState('');
@@ -20,7 +21,10 @@ export default function SignUp() {
   const context = useContext(GlobalContext);
   const navigate = useNavigate();
 
-  const { data, isSuccess, error, isError, mutate } = useMutation<AxiosResponse<SignInResponseType>, AxiosError>(() =>
+  const { data, isSuccess, isLoading, error, isError, mutate } = useMutation<
+    AxiosResponse<SignInResponseType>,
+    AxiosError
+  >(() =>
     api.post('/users/register', {
       username,
       firstName,
@@ -122,9 +126,9 @@ export default function SignUp() {
               />
             </Grid>
           </Grid>
-          <Button type='submit' fullWidth variant='contained' sx={{ mt: 1, mb: 2 }}>
+          <LoadingButton loading={isLoading} type='submit' fullWidth variant='contained' sx={{ mt: 1, mb: 2 }}>
             Sign Up
-          </Button>
+          </LoadingButton>
           <Grid container justifyContent='flex-end'>
             <Grid item>
               <Link href='/sign-in' variant='body2'>
@@ -134,7 +138,7 @@ export default function SignUp() {
           </Grid>
         </Box>
       </Box>
-      <ErrorSnackbar open={isError} message='Sign up failed. Please try again.' />
+      <MessageSnackbar open={isError} message='Sign up failed. Please try again.' severity={'error'} />
     </Container>
   );
 }

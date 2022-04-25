@@ -2,9 +2,7 @@ package com.cc.a1.service;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.cc.a1.exception.InvalidImageException;
@@ -49,9 +47,8 @@ public class S3Service {
 
         TransferManager transferManager = TransferManagerBuilder.standard().withS3Client(s3Client).build();
         try {
-            transferManager.upload(
-                    new PutObjectRequest(bucketName, newFileName, multipartFile.getInputStream(), metadata)
-                            .withCannedAcl(CannedAccessControlList.PublicRead)).waitForUploadResult();
+            transferManager.upload(bucketName, newFileName, multipartFile.getInputStream(), metadata)
+                           .waitForUploadResult();
         } catch (AmazonServiceException | IOException | InterruptedException exception) {
 
             throw new InvalidImageException("Could not upload image.");

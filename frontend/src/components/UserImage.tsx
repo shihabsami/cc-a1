@@ -1,6 +1,6 @@
 import { Avatar, AvatarProps, Badge, styled } from '@mui/material';
 
-export default function ProfileImage(props: AvatarProps) {
+export default function UserImage(props: AvatarProps) {
   const StyledBadge = styled(Badge)(({ theme }) => ({
     '& .MuiBadge-badge': {
       backgroundColor: '#44b700',

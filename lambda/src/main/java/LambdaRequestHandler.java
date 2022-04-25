@@ -6,7 +6,9 @@ import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification.S3EventNotificationRecord;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.google.common.io.Files;
@@ -48,8 +50,13 @@ public class LambdaRequestHandler implements RequestHandler<S3Event, String> {
             throw new RuntimeException();
         }
 
-        if (s3Object.getObjectMetadata().getUserMetaDataOf("image-for").equals("post")) {
-            logger.log("INFO Skipping as metadata 'image-for' set to 'post'");
+        try {
+            if (s3Object.getObjectMetadata().getUserMetaDataOf("image-for").equals("post")) {
+                logger.log("INFO Skipping as metadata 'image-for' set to 'post'");
+                return "OK";
+            }
+        } catch (NullPointerException exception) {
+            logger.log("INFO Skipping as metadata 'image-for' could not be found");
             return "OK";
         }
 
@@ -68,7 +75,7 @@ public class LambdaRequestHandler implements RequestHandler<S3Event, String> {
         try {
             Thumbnails.of(image)
                       .size(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT)
-                      .keepAspectRatio(false)
+                      .keepAspectRatio(true)
                       .outputFormat("jpeg")
                       .outputQuality(1)
                       .toOutputStream(outputStream);
@@ -89,9 +96,8 @@ public class LambdaRequestHandler implements RequestHandler<S3Event, String> {
 
         TransferManager transferManager = TransferManagerBuilder.standard().withS3Client(s3Client).build();
         try {
-            transferManager.upload(
-                    new PutObjectRequest(DESTINATION_BUCKET, destinationObjectKey, inputStream, metadata)
-                            .withCannedAcl(CannedAccessControlList.PublicRead)).waitForUploadResult();
+            transferManager.upload(DESTINATION_BUCKET, destinationObjectKey, inputStream, metadata)
+                           .waitForUploadResult();
         } catch (AmazonServiceException | InterruptedException exception) {
             logger.log("FAILURE: Failed to upload image");
             throw new RuntimeException();

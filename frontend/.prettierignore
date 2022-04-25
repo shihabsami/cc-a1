@@ -1,5 +1,15 @@
-.idea
+### Dependencies ###
+/node_modules
 .husky
-node_modules
-build
-coverage
+
+### IntelliJ IDEA ###
+.idea
+
+### VS Code ###
+.vscode/
+
+### Testing ###
+/coverage
+
+### Production ###
+/build

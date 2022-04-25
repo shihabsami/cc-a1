@@ -89,7 +89,7 @@ public class UsersController {
     /**
      * Get the currently authenticated user.
      */
-    @GetMapping("/getAuthenticated")
+    @GetMapping("/authenticated")
     public ResponseEntity<?> getAuthenticated() throws UserNotFoundException {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return new ResponseEntity<>(usersService.getUserByUsername(userDetails.getUsername()), HttpStatus.OK);

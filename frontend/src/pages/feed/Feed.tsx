@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import { Box, Container, Divider, Link, Typography } from '@mui/material';
@@ -54,9 +54,11 @@ export default function Feed() {
   const onPostSuccess = useCallback(() => {
     setFeedState(initialFeedState);
   }, []);
+  const containerRef = useRef(null);
 
   return (
     <Container
+      ref={containerRef}
       maxWidth='sm'
       sx={{
         display: 'flex',

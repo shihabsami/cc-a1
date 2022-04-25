@@ -7,8 +7,8 @@ import { GlobalContext } from '../../components/GlobalContext';
 import { api } from '../../util/api';
 import { ACCEPTED_IMAGE_TYPES } from '../../util/constants';
 import LoadingButton from '../../components/LoadingButton';
-import ProfileImage from '../../components/ProfileImage';
-import ErrorSnackbar from '../../components/ErrorSnackbar';
+import UserImage from '../../components/UserImage';
+import MessageSnackbar from '../../components/MessageSnackbar';
 
 export default function UploadProfileImage() {
   const { user, isContextLoading: isLoading, isSignedIn } = useContext(GlobalContext);
@@ -33,7 +33,7 @@ export default function UploadProfileImage() {
     const formData = new FormData();
     image && formData.append('image', image);
     user && formData.append('username', user.username);
-    return api.post('/images/save/user', formData, { headers: { 'Content-Type': `multipart/form-data` } });
+    return api.post('/images/user/save', formData, { headers: { 'Content-Type': `multipart/form-data` } });
   });
 
   useEffect(() => {
@@ -55,7 +55,7 @@ export default function UploadProfileImage() {
           <Typography variant='h6'>Nice! Let&apos;s make it easier for others to recognise you.</Typography>
         </Grid>
         <Grid item xs={12}>
-          <ProfileImage
+          <UserImage
             src={image && URL.createObjectURL(image)}
             sx={{ border: '3px solid #b39ddb', width: 128, height: 128 }}
           />
@@ -107,7 +107,7 @@ export default function UploadProfileImage() {
           </Button>
         </Grid>
       </Grid>
-      <ErrorSnackbar message='Could not upload image. Please try again.' open={isError} />
+      <MessageSnackbar message='Could not upload image. Please try again.' open={isError} severity={'error'} />
     </Container>
   );
 }

@@ -9,13 +9,14 @@ import {
   TextField,
   Typography
 } from '@mui/material';
-import { RateReviewRounded, CloseRounded, AddPhotoAlternateRounded, DeleteRounded } from '@mui/icons-material';
+import { RateReviewRounded, CloseRounded, AddPhotoAlternateRounded, DeleteOutlineRounded } from '@mui/icons-material';
 import { useEffect, useRef, useState } from 'react';
 import { useMutation } from 'react-query';
 import { api } from '../util/api';
 import { ACCEPTED_IMAGE_TYPES } from '../util/constants';
 import { UserType } from '../util/types';
 import LoadingButton from './LoadingButton';
+import MessageSnackbar from './MessageSnackbar';
 
 export default function AddPost({ user, onSuccess }: { user?: UserType; onSuccess: () => void }) {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -36,17 +37,20 @@ export default function AddPost({ user, onSuccess }: { user?: UserType; onSucces
   const {
     isLoading: isPostLoading,
     isSuccess: isPostSuccess,
+    isError: isPostError,
     mutate: mutatePost
   } = useMutation(async () => {
     const text = textFieldRef.current?.value;
-    if (!text && !image) return;
+    if (!text && !image) {
+      throw Error('No text or image provided');
+    }
 
     const formData = new FormData();
     formData.append('text', text || '');
     let response;
     if (image) {
       formData.append('image', image);
-      response = await api.post('/posts/save/image', formData, {
+      response = await api.post('/posts/save', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
     } else {
@@ -55,6 +59,10 @@ export default function AddPost({ user, onSuccess }: { user?: UserType; onSucces
 
     return response;
   });
+
+  const handleClose = () => {
+    !isPostLoading && setDialogOpen(false);
+  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -99,18 +107,12 @@ export default function AddPost({ user, onSuccess }: { user?: UserType; onSucces
           </Button>
         </Box>
       </Box>
-      <Dialog
-        sx={{ backgroundColor: 'transparent', boxShadow: 'none' }}
-        onClose={() => {
-          !isPostLoading && setDialogOpen(false);
-        }}
-        open={dialogOpen}
-      >
+      <Dialog sx={{ backgroundColor: 'transparent', boxShadow: 'none' }} onClose={handleClose} open={dialogOpen}>
         <DialogTitle>
           <Typography variant='body1'>Create New Post</Typography>
           <IconButton
             aria-label='close'
-            onClick={() => setDialogOpen(false)}
+            onClick={handleClose}
             disabled={isPostLoading}
             sx={{
               position: 'absolute',
@@ -160,7 +162,7 @@ export default function AddPost({ user, onSuccess }: { user?: UserType; onSucces
                     sx={{ position: 'absolute', right: 0, top: '1rem' }}
                     onClick={() => setImage(undefined)}
                   >
-                    <DeleteRounded />
+                    <DeleteOutlineRounded color='primary' />
                   </IconButton>
                 </Box>
               )}
@@ -183,7 +185,13 @@ export default function AddPost({ user, onSuccess }: { user?: UserType; onSucces
                 </label>
               </Box>
               <Box flexGrow={1} sx={{ pl: 2 }}>
-                <LoadingButton loading={isPostLoading} type='submit' fullWidth variant='contained'>
+                <LoadingButton
+                  loading={isPostLoading}
+                  type='submit'
+                  fullWidth
+                  variant='contained'
+                  disabled={isPostLoading}
+                >
                   Post
                 </LoadingButton>
               </Box>
@@ -191,6 +199,8 @@ export default function AddPost({ user, onSuccess }: { user?: UserType; onSucces
           </Box>
         </DialogContent>
       </Dialog>
+      <MessageSnackbar open={isPostError} message='Could not post. Please try again.' severity={'error'} />
+      <MessageSnackbar open={isPostSuccess} message="Posted. Let's see what others think." severity={'success'} />
     </>
   );
 }

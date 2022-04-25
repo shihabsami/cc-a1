@@ -1,20 +1,9 @@
-# Dependencies
+### Dependencies ###
 /node_modules
-/.pnp
-.pnp.js
 .husky
-
-# Testing
-/coverage
-
-# Production
-/build
 
 ### IntelliJ IDEA ###
 .idea
-*.iws
-*.iml
-*.ipr
 
 ### VS Code ###
 .vscode/
@@ -22,6 +11,3 @@
 ### Misc ###
 .gitignore
 .dockerignore
-
-# Elastic Beanstalk Files
-.elasticbeanstalk/*

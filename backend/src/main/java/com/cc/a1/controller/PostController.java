@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Optional;
+
 import static com.cc.a1.security.SecurityConstants.AUTHORIZATION_HEADER;
 import static com.cc.a1.security.SecurityConstants.JWT_SCHEME;
 
@@ -31,18 +33,15 @@ public class PostController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<?> save(@RequestHeader(name = AUTHORIZATION_HEADER) String jwt, @RequestParam String text) {
-        String username = jwtUtility.extractUsername(jwt.substring(JWT_SCHEME.length() + 1));
-        return new ResponseEntity<>(postsService.savePost(text, username), HttpStatus.CREATED);
-    }
-
-    @PostMapping("/save/image")
-    public ResponseEntity<?> saveWithImage(@RequestHeader(name = AUTHORIZATION_HEADER) String jwt,
-                                           @RequestParam MultipartFile image, @RequestParam String text) {
+    public ResponseEntity<?> save(@RequestHeader(name = AUTHORIZATION_HEADER) String jwt, @RequestParam String text,
+                                  @RequestParam(required = false) Optional<MultipartFile> image) {
         String username = jwtUtility.extractUsername(jwt.substring(JWT_SCHEME.length() + 1));
         Post post = postsService.savePost(text, username);
-        Image postImage = imagesService.savePostImage(image, post.getId());
-        post.setImage(postImage);
+        if (image.isPresent()) {
+            Image postImage = imagesService.savePostImage(image.get(), post.getId());
+            post.setImage(postImage);
+        }
+
         return new ResponseEntity<>(post, HttpStatus.CREATED);
     }
 

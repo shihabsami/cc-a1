@@ -1,7 +1,7 @@
 import { Alert, Snackbar, SnackbarProps } from '@mui/material';
 import { useEffect, useState } from 'react';
 
-export default function ErrorSnackbar({ message, open, ...rest }: ErrorSnackbarProps) {
+export default function MessageSnackbar({ message, open, severity, ...rest }: MessageSnackbarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const handleErrorSnackbarClose = () => {
     setIsOpen(false);
@@ -14,14 +14,15 @@ export default function ErrorSnackbar({ message, open, ...rest }: ErrorSnackbarP
 
   return (
     <Snackbar open={isOpen} autoHideDuration={5000} onClose={handleErrorSnackbarClose} {...rest}>
-      <Alert severity='error' onClose={handleErrorSnackbarClose}>
+      <Alert severity={severity} onClose={handleErrorSnackbarClose}>
         {message}
       </Alert>
     </Snackbar>
   );
 }
 
-interface ErrorSnackbarProps extends SnackbarProps {
+interface MessageSnackbarProps extends SnackbarProps {
   message: string;
   open: boolean;
+  severity: 'success' | 'error' | 'info' | 'warning';
 }

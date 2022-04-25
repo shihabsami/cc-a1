@@ -4,9 +4,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>cc.a1</groupId>
+    <groupId>com.cc</groupId>
     <artifactId>cc-a1</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <name>cc-a1</name>
+    <description>cc-a1</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -28,7 +30,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
-            <version>1.12.196</version>
+            <version>1.12.205</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>

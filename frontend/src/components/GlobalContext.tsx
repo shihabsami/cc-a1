@@ -23,7 +23,7 @@ export default function GlobalContextProvider({ children }: { children: React.Re
 
   const { data, refetch, remove, isLoading, isFetching, isError } = useQuery<AxiosResponse<UserType>, AxiosError>(
     'fetchUser',
-    () => api.get('/users/getAuthenticated'),
+    () => api.get('/users/authenticated'),
     { enabled: false }
   );
 

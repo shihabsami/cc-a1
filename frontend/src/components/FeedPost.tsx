@@ -26,11 +26,11 @@ import {
 import {
   DoneAllTwoTone,
   ExpandLessTwoTone,
-  InsertComment,
   Share,
-  ThumbUpAlt,
   RateReviewTwoTone,
-  ThumbUpOffAlt
+  FavoriteRounded,
+  FavoriteBorderRounded,
+  ForumRounded
 } from '@mui/icons-material';
 import { GlobalContext } from './GlobalContext';
 import { CommentType, LikeType, PostType } from '../util/types';
@@ -188,7 +188,11 @@ export default function FeedPost({ post, ...rest }: FeedPostProps) {
         <CardActions disableSpacing sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
           {isLikesLoading || isLikeLoading ? (
             <Button fullWidth disabled>
-              {liked ? <ThumbUpAlt fontSize='medium' color='primary' /> : <ThumbUpOffAlt fontSize='medium' />}
+              {liked ? (
+                <FavoriteRounded fontSize='medium' color='primary' />
+              ) : (
+                <FavoriteBorderRounded fontSize='medium' />
+              )}
               <Box display='flex' justifyContent='center' alignItems='center' pl={0.5}>
                 <CircularProgress size='1rem' color='primary' />
               </Box>
@@ -200,7 +204,11 @@ export default function FeedPost({ post, ...rest }: FeedPostProps) {
                 mutateLike();
               }}
             >
-              {liked ? <ThumbUpAlt fontSize='medium' color='primary' /> : <ThumbUpOffAlt fontSize='medium' />}
+              {liked ? (
+                <FavoriteRounded fontSize='medium' color='primary' />
+              ) : (
+                <FavoriteBorderRounded fontSize='medium' />
+              )}
               <Box display='flex' justifyContent='center' alignItems='center' pl={0.5}>
                 <Typography sx={{ width: '1rem' }}>{likes?.length}</Typography>
               </Box>
@@ -208,14 +216,14 @@ export default function FeedPost({ post, ...rest }: FeedPostProps) {
           )}
           {isCommentsLoading ? (
             <Button fullWidth disabled>
-              <InsertComment fontSize='medium' />
+              <ForumRounded fontSize='medium' />
               <Box display='flex' justifyContent='center' alignItems='center' pl={0.5}>
                 <CircularProgress size='1rem' color='primary' />
               </Box>{' '}
             </Button>
           ) : (
             <Button fullWidth onClick={() => setCommentsOpen((prevState) => !prevState)}>
-              {commentsOpen ? <ExpandLessTwoTone fontSize='medium' /> : <InsertComment fontSize='medium' />}
+              {commentsOpen ? <ExpandLessTwoTone fontSize='medium' /> : <ForumRounded fontSize='medium' />}
               <Box display='flex' justifyContent='center' alignItems='center' pl={0.5}>
                 <Typography sx={{ width: '1rem' }}>{comments?.length}</Typography>
               </Box>

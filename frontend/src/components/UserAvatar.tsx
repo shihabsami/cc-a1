@@ -61,7 +61,7 @@ export default function UserAvatar({ user, ...rest }: UserAvatarProps) {
   }, [isThumbnailSuccess, thumbnailData, isThumbnailError]);
 
   return (
-    <Link href={`/profile/${user?.id}`}>
+    <Link href={`/profile/${user?.id}`} sx={{ textDecoration: 'none' }}>
       <Avatar
         {...rest}
         sx={{ border: `2px solid #d0c3e8` }}
