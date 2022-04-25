@@ -1,6 +1,10 @@
 ### Dependencies ###
 /node_modules
 .husky
+.prettierrc
+.prettierignore
+.eslintrc
+.eslintignore
 
 ### IntelliJ IDEA ###
 .idea

@@ -234,7 +234,7 @@ export default function FeedPost({ post, ...rest }: FeedPostProps) {
           </Button>
           <Menu anchorEl={anchorEl} open={shareOpen} onClose={handleShareClose} disableScrollLock>
             <MenuItem onClick={handleShareClose}>
-              <FacebookShareButton style={{ display: 'inline-flex' }} url={shareUrl} title={shareTitle}>
+              <FacebookShareButton style={{ display: 'inline-flex' }} url={shareUrl} quote={shareTitle}>
                 <FacebookIcon size={32} round />
                 <Typography sx={{ pl: 1 }}>Facebook</Typography>
               </FacebookShareButton>
